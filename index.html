@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장비 내구도 계산기</title>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .main-content {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 900px;
+        }
+        .container {
+            flex: 1 1 450px;
+            max-width: 500px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #e0e0e0;
+            transition: box-shadow 0.3s ease;
+        }
+        h1 {
+            text-align: center;
+            color: #1e3a5f;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #555;
+            flex-basis: 60%;
+        }
+        .input-group .input-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        .input-group input {
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9em;
+            box-sizing: border-box;
+            width: 100px;
+            text-align: right;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .input-group .unit {
+            margin-left: 5px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .select-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .select-group select {
+            flex-grow: 1;
+            padding: 8px 10px;
+            font-size: 0.9em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .button-group button {
+            flex-grow: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-weight: 600;
+        }
+        .calculate-btn { background-color: #007bff; color: white; }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            min-width: 80px;
+            font-size: 0.9em;
+        }
+        .calculate-btn:hover { background-color: #0056b3; transform: translateY(-2px); }
+        .delete-btn:hover { background-color: #c82333; transform: translateY(-2px); }
+
+        .calculated-values {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+        .calculated-values h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #1e3a5f;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+        .calculated-values p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+        .danger-text {
+            color: #dc3545;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .gauge-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1 1 350px;
+            max-width: 400px;
+            align-items: center;
+        }
+        .gauge-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            background-color: #444;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .gauge-wrapper h3 {
+            margin: 0;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        .gauge-wrapper .subtitle {
+            font-size: 0.9em;
+            color: #bbb;
+            margin-top: 1px;
+            margin-bottom: 10px;
+        }
+        .linear-gauge-wrapper {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .linear-gauge {
+            width: 200px;
+            height: 20px;
+            background: linear-gradient(to right, #dc3545 0%, #ffc107 50%, #28a745 100%);
+            border-radius: 5px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .gauge-pointer {
+            width: 10px;
+            height: 10px;
+            background-color: #000;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 0%;
+            transform: translate(-50%, -50%);
+            transition: left 0.3s ease-out;
+        }
+        .gauge-text {
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+        .gauge-level {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        .level-safe { color: #28a745; }
+        .level-normal { color: #ffc107; }
+        .level-danger { color: #dc3545; }
+
+        .circular-gauge-container {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            margin: 15px auto;
+        }
+        .circular-gauge-svg {
+            transform: rotate(-90deg); /* 12시 방향에서 시작하도록 설정 */
+        }
+        .circular-gauge-bg {
+            fill: none;
+            stroke: #666;
+            stroke-width: 4;
+            r: 50px;
+            cx: 60px;
+            cy: 60px;
+        }
+        .circular-gauge-fill {
+            fill: none;
+            stroke: #fff;
+            stroke-width: 3;
+            stroke-linecap: butt; /* 끝을 둥글지 않게 만듦 */
+            transition: stroke-dasharray 0.3s ease-in-out;
+            r: 50px;
+            cx: 60px;
+            cy: 60px;
+        }
+        .circular-gauge-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #fff;
+        }
+        .circular-gauge-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        .gauge-description {
+            text-align: center;
+            margin-top: 10px;
+            line-height: 1.4;
+            color: #ccc;
+            font-size: 0.9em;
+        }
+        .gauge-description .highlight {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        #excess-load-text {
+            font-weight: bold;
+        }
+        #excess-load-wrapper {
+            font-weight: normal;
+        }
+        .danger {
+            color: #dc3545 !important;
+        }
+        .warning-box {
+            display: none;
+            width: 100%;
+            max-width: 350px;
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: display 0.3s ease;
+        }
+        .warning-box p {
+            margin: 0;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-content">
+    <div class="container">
+        <h1>장비 내구도 계산기</h1>
+
+        <div class="select-group">
+            <select id="saved-reels">
+                <option value="">새로운 릴</option>
+            </select>
+            <button class="delete-btn" id="delete-btn">삭제</button>
+        </div>
+
+        <div class="input-group">
+            <label for="reel-name">릴 이름</label>
+            <input type="text" id="reel-name" placeholder="예: 릴 1호">
+        </div>
+        <div class="input-group">
+            <label for="reel-max">릴 내부하중 (인게임미표시)</label>
+            <div class="input-wrapper">
+                <input type="number" id="reel-max" placeholder="60.00" value="60.00" step="0.1">
+                <span class="unit">kg</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="reel-damage">메커니즘 손상도</label>
+            <div class="input-wrapper">
+                <input type="number" id="reel-damage" placeholder="10.55" value="0.00" step="0.1">
+                <span class="unit">%</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="brake-max">마찰 브레이크 최대 하중</label>
+            <div class="input-wrapper">
+                <input type="number" id="brake-max" placeholder="40.00" value="40.00" step="0.1">
+                <span class="unit">kg</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="brake-damage">마찰 브레이크 손상도</label>
+            <div class="input-wrapper">
+                <input type="number" id="brake-damage" placeholder="8.75" value="0.00" step="0.1">
+                <span class="unit">%</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="leader-max">목줄 최대 하중</label>
+            <div class="input-wrapper">
+                <input type="number" id="leader-max" placeholder="50.00" step="0.1">
+                <span class="unit">kg</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="leader-damage">목줄 손상도</label>
+            <div class="input-wrapper">
+                <input type="number" id="leader-damage" placeholder="5.55" value="0.00" step="0.1">
+                <span class="unit">%</span>
+            </div>
+        </div>
+
+        <div class="calculated-values" id="calculated-values">
+            <h4>현재 하중 계산 결과</h4>
+            <p id="current-reel-performance"></p>
+            <p id="current-brake-performance"></p>
+            <p id="current-leader-performance"></p>
+        </div>
+    </div>
+
+    <div class="gauge-container">
+        <div class="linear-gauge-wrapper" id="linear-gauge-wrapper">
+            <h3>내부하중 vs 목줄</h3>
+            <small class="subtitle">(∞ 사용 시)</small>
+            <div class="linear-gauge">
+                <div class="gauge-pointer" id="reel-pointer"></div>
+            </div>
+            <div class="gauge-text">
+                <div class="gauge-value" id="reel-gauge-value"></div>
+            </div>
+        </div>
+        <div class="gauge-wrapper" id="circular-gauge-wrapper">
+            <h3>마브 vs 목줄</h3>
+            <div class="circular-gauge-container">
+                <svg class="circular-gauge-svg" viewBox="0 0 120 120">
+                    <circle class="circular-gauge-bg" cx="60" cy="60" r="50" />
+                    <circle class="circular-gauge-fill" id="circular-gauge-fill" cx="60" cy="60" r="50" />
+                </svg>
+                <div class="circular-gauge-center">
+                    <div class="circular-gauge-value" id="drag-level-display"></div>
+                </div>
+            </div>
+            <div class="gauge-description">
+                <span class="highlight" id="drag-status-text"></span><br>
+                <span id="drag-sustainability-text"></span>
+            </div>
+        </div>
+        <div class="warning-box" id="warning-box">
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const inputFields = document.querySelectorAll('.input-group input');
+    const numberInputs = document.querySelectorAll('.input-group input[type="number"]');
+    const reelNameInput = document.getElementById('reel-name');
+    const reelMaxInput = document.getElementById('reel-max');
+    const reelDamageInput = document.getElementById('reel-damage');
+    const leaderMaxInput = document.getElementById('leader-max');
+    const leaderDamageInput = document.getElementById('leader-damage');
+    const brakeMaxInput = document.getElementById('brake-max');
+    const brakeDamageInput = document.getElementById('brake-damage');
+    const deleteBtn = document.getElementById('delete-btn');
+    const savedReelsSelect = document.getElementById('saved-reels');
+
+    const calculatedValuesDiv = document.getElementById('calculated-values');
+    const currentReelPerformanceP = document.getElementById('current-reel-performance');
+    const currentLeaderPerformanceP = document.getElementById('current-leader-performance');
+    const currentBrakePerformanceP = document.getElementById('current-brake-performance');
+    
+    const linearGaugeWrapper = document.getElementById('linear-gauge-wrapper');
+    const circularGaugeWrapper = document.getElementById('circular-gauge-wrapper');
+
+    const reelPointer = document.getElementById('reel-pointer');
+    const reelGaugeValue = document.getElementById('reel-gauge-value');
+    
+    const dragLevelDisplay = document.getElementById('drag-level-display');
+    const dragStatusText = document.getElementById('drag-status-text');
+    const dragSustainabilityText = document.getElementById('drag-sustainability-text');
+    const circularGaugeFill = document.getElementById('circular-gauge-fill');
+    
+    const warningBox = document.getElementById('warning-box');
+
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius;
+    circularGaugeFill.style.strokeDasharray = `${circumference}, ${circumference}`;
+    circularGaugeFill.style.strokeDashoffset = circumference;
+
+    inputFields.forEach((input, index) => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (index < inputFields.length - 1) {
+                    inputFields[index + 1].focus();
+                }
+            }
+        });
+    });
+
+    numberInputs.forEach(input => {
+        input.addEventListener('input', calculateAndSave);
+        input.addEventListener('change', calculateAndSave);
+    });
+    
+    reelNameInput.addEventListener('change', calculateAndSave);
+
+    function loadReelList() {
+        savedReelsSelect.innerHTML = '<option value="">새로운 릴</option>';
+        const reelKeys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('reel_')) {
+                reelKeys.push(key);
+            }
+        }
+        reelKeys.sort();
+        reelKeys.forEach(key => {
+            const reelName = key.substring(5);
+            const option = document.createElement('option');
+            option.value = reelName;
+            option.textContent = reelName;
+            savedReelsSelect.appendChild(option);
+        });
+    }
+
+    function showResults(show) {
+        calculatedValuesDiv.style.opacity = show ? '1' : '0';
+        linearGaugeWrapper.style.opacity = show ? '1' : '0';
+        circularGaugeWrapper.style.opacity = show ? '1' : '0';
+    }
+
+    function getColorForValue(value, min, max) {
+        // 값의 범위를 0-1로 정규화
+        let normalizedValue = (value - min) / (max - min);
+        normalizedValue = Math.max(0, Math.min(1, normalizedValue));
+
+        let red, green, blue;
+
+        // 빨강 -> 노랑 (0.0 ~ 0.5)
+        if (normalizedValue <= 0.5) {
+            const ratio = normalizedValue / 0.5;
+            red = 220;
+            green = Math.round(193 * ratio);
+            blue = Math.round(53 * ratio);
+        }
+        // 노랑 -> 초록 (0.5 ~ 1.0)
+        else {
+            const ratio = (normalizedValue - 0.5) / 0.5;
+            red = Math.round(220 * (1 - ratio));
+            green = 193 + Math.round((168 - 193) * ratio);
+            blue = 53 + Math.round((69 - 53) * ratio);
+        }
+        return `rgb(${red}, ${green}, ${blue})`;
+    }
+
+    function updateReelGauge(reelPerformance, leaderPerformance) {
+        const excessLoadKg = reelPerformance - leaderPerformance;
+        const minVal = -5; // 최소값 (빨강)
+        const maxVal = 20; // 최대값 (초록)
+        
+        const color = getColorForValue(excessLoadKg, minVal, maxVal);
+        
+        // 정규화된 값 계산, 0~100% 범위로 제한
+        let normalizedValue = ((excessLoadKg - minVal) / (maxVal - minVal)) * 100;
+        normalizedValue = Math.max(0, Math.min(100, normalizedValue));
+
+        updateLinearGauge(reelPointer, normalizedValue);
+        
+        reelGaugeValue.innerHTML = `내부하중: ${reelPerformance.toFixed(2)}kg<br>목줄: ${leaderPerformance.toFixed(2)}kg<br><span id="excess-load-wrapper" style="color:${color};">여유하중: ${excessLoadKg.toFixed(2)}kg</span>`;
+    }
+    
+    function updateLinearGauge(pointer, normalizedValue) {
+        const position = normalizedValue;
+        // 게이지 바깥으로 나가지 않도록 0~100 범위로 제한
+        const clampedPosition = Math.max(0, Math.min(100, position));
+        pointer.style.left = `${clampedPosition}%`;
+    }
+
+    function updateCircularGauge(brakePerformance, leaderMax, leaderDamage) {
+        const maxDragSteps = 29;
+        const dragPerStep = brakePerformance / maxDragSteps;
+        const currentLeaderPerformance = leaderMax * ((100 - leaderDamage) / 100);
+
+        const maxUsableDragSteps = Math.floor(currentLeaderPerformance / dragPerStep);
+        const displayDragSteps = Math.min(maxUsableDragSteps, maxDragSteps);
+        
+        const progress = (displayDragSteps / 30) * 0.966;
+        const dashoffset = circumference * (1 - progress);
+        circularGaugeFill.style.strokeDashoffset = dashoffset;
+        
+        if (displayDragSteps === 0) {
+            dragLevelDisplay.textContent = '0';
+            dragStatusText.innerHTML = '경고! 1단계 드래그도 사용 불가';
+            circularGaugeFill.style.stroke = '#fff';
+        } else {
+            dragLevelDisplay.textContent = displayDragSteps;
+            dragStatusText.innerHTML = `현재 <span class="highlight">${displayDragSteps}</span> 드래그 사용 가능`;
+            circularGaugeFill.style.stroke = '#fff';
+        }
+        
+        const requiredLeaderPerformance = displayDragSteps * dragPerStep;
+        const requiredLeaderDamage = 100 - (requiredLeaderPerformance / leaderMax * 100);
+        const maxUsableDamage = parseFloat(requiredLeaderDamage.toFixed(2));
+        
+        if (requiredLeaderPerformance <= currentLeaderPerformance) {
+            dragSustainabilityText.textContent = `(목줄 손상도 ${maxUsableDamage}%까지)`;
+            dragSustainabilityText.classList.remove('danger');
+        } else {
+            dragSustainabilityText.textContent = `(목줄 내구도 부족으로 사용 불가)`;
+            dragSustainabilityText.classList.add('danger');
+        }
+    }
+
+    function updateWarnings(currentReelPerformance, currentBrakePerformance, currentLeaderPerformance) {
+        let warnings = [];
+        
+        if (currentBrakePerformance > currentReelPerformance) {
+            warnings.push("마찰 브레이크 하중이 릴 내부하중보다 높습니다. 릴 손상에 유의하세요.");
+        }
+        
+        if (currentLeaderPerformance > currentReelPerformance) {
+            warnings.push("목줄 하중이 릴 내부하중보다 높습니다. 릴 손상에 유의하세요.");
+        }
+
+        if (warnings.length > 0) {
+            warningBox.innerHTML = warnings.map(msg => `⚠ ${msg}`).join('<br>');
+            warningBox.style.display = 'block';
+        } else {
+            warningBox.style.display = 'none';
+        }
+    }
+
+    function calculateAndSave() {
+        const reelName = reelNameInput.value.trim();
+        const reelMax = parseFloat(reelMaxInput.value);
+        const reelDamage = parseFloat(reelDamageInput.value);
+        const leaderMax = parseFloat(leaderMaxInput.value);
+        const leaderDamage = parseFloat(leaderDamageInput.value);
+        const brakeMax = parseFloat(brakeMaxInput.value);
+        const brakeDamage = parseFloat(brakeDamageInput.value);
+
+        if (!reelName) {
+            showResults(false);
+            return;
+        }
+        if (isNaN(reelMax) || isNaN(reelDamage) || isNaN(leaderMax) || isNaN(leaderDamage) || isNaN(brakeMax) || isNaN(brakeDamage)) {
+            showResults(false);
+            return;
+        }
+        if (reelDamage < 0 || reelDamage > 100 || leaderDamage < 0 || leaderDamage > 100 || brakeDamage < 0 || brakeDamage > 100) {
+            showResults(false);
+            return;
+        }
+
+        const currentReelPerformance = reelMax * ((100 - reelDamage) / 100);
+        const currentBrakePerformance = brakeMax * ((100 - brakeDamage) / 100);
+        const currentLeaderPerformance = leaderMax * ((100 - leaderDamage) / 100);
+        
+        const reelData = {
+            reelMax: reelMaxInput.value,
+            reelDamage: reelDamageInput.value,
+            leaderMax: leaderMaxInput.value,
+            leaderDamage: leaderDamageInput.value,
+            brakeMax: brakeMaxInput.value,
+            brakeDamage: brakeDamageInput.value
+        };
+        localStorage.setItem(`reel_${reelName}`, JSON.stringify(reelData));
+        
+        const reelPerformanceEl = document.getElementById('current-reel-performance');
+        reelPerformanceEl.textContent = `내부하중: ${currentReelPerformance.toFixed(2)} kg`;
+        reelPerformanceEl.style.color = '#333';
+        
+        currentBrakePerformanceP.textContent = `마찰브레이크: ${currentBrakePerformance.toFixed(2)} kg`;
+        currentLeaderPerformanceP.textContent = `목줄: ${currentLeaderPerformance.toFixed(2)} kg`;
+
+        updateReelGauge(currentReelPerformance, currentLeaderPerformance);
+        updateCircularGauge(currentBrakePerformance, leaderMax, leaderDamage);
+        updateWarnings(currentReelPerformance, currentBrakePerformance, currentLeaderPerformance);
+
+        showResults(true);
+        loadReelList();
+        savedReelsSelect.value = reelName;
+    }
+
+    savedReelsSelect.addEventListener('change', () => {
+        const selectedReelName = savedReelsSelect.value;
+        if (selectedReelName) {
+            const savedData = localStorage.getItem(`reel_${selectedReelName}`);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                reelNameInput.value = selectedReelName;
+                reelMaxInput.value = data.reelMax;
+                reelDamageInput.value = data.reelDamage;
+                leaderMaxInput.value = data.leaderMax;
+                leaderDamageInput.value = data.leaderDamage;
+                brakeMaxInput.value = data.brakeMax || '40.00';
+                brakeDamageInput.value = data.brakeDamage || '0.00';
+                calculateAndSave();
+            }
+        } else {
+            showResults(false);
+            reelNameInput.value = '';
+            reelMaxInput.value = '60.00';
+            reelDamageInput.value = '0.00';
+            leaderMaxInput.value = '';
+            leaderDamageInput.value = '0.00';
+            brakeMaxInput.value = '40.00';
+            brakeDamageInput.value = '0.00';
+            warningBox.style.display = 'none';
+        }
+    });
+
+    deleteBtn.addEventListener('click', () => {
+        const selectedReelName = savedReelsSelect.value;
+        if (!selectedReelName) {
+            alert('삭제할 릴을 선택해주세요!');
+            return;
+        }
+
+        if (confirm(`${selectedReelName} 릴 정보를 정말 삭제하시겠습니까?`)) {
+            localStorage.removeItem(`reel_${selectedReelName}`);
+            alert(`${selectedReelName} 릴 정보가 삭제되었습니다.`);
+            loadReelList();
+            showResults(false);
+            reelNameInput.value = '';
+            reelMaxInput.value = '60.00';
+            reelDamageInput.value = '0.00';
+            leaderMaxInput.value = '';
+            leaderDamageInput.value = '0.00';
+            brakeMaxInput.value = '40.00';
+            brakeDamageInput.value = '0.00';
+            warningBox.style.display = 'none';
+        }
+    });
+
+    loadReelList();
+});
+</script>
+</body>
+</html>
