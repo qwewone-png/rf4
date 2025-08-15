@@ -84,9 +84,6 @@
             font-size: 0.9em;
             width: 30px;
         }
-        .input-group .no-unit {
-            width: 30px;
-        }
         .select-group {
             display: flex;
             gap: 10px;
@@ -327,6 +324,57 @@
             color: #dc3545;
             font-weight: bold;
         }
+
+        /* 변경된 CSS: 릴 이름 필드 정렬 */
+        .input-group-reel-name, .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .input-group-reel-name label, .input-group label {
+            width: 140px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        /* 릴 이름 필드의 입력칸과 다른 필드의 입력칸+단위의 너비를 일치시켜 오른쪽 끝을 정렬 */
+        .input-group-reel-name .input-wrapper, .input-group .input-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 135px; /* 입력(100px) + 단위(30px) + 마진(5px)의 총합 */
+        }
+        .input-group-reel-name input {
+            width: 100%; /* 부모(input-wrapper)에 맞춰 너비 확장 */
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9em;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        .input-group-reel-name .unit {
+            display: none;
+        }
+        .input-group input {
+            width: 100px;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9em;
+            box-sizing: border-box;
+            text-align: right;
+            transition: border-color 0.3s;
+        }
+        .input-group .unit {
+            margin-left: 5px;
+            color: #666;
+            font-size: 0.9em;
+            width: 30px;
+        }
     </style>
 </head>
 <body>
@@ -342,7 +390,7 @@
             <button class="delete-btn" id="delete-btn">삭제</button>
         </div>
 
-        <div class="input-group">
+        <div class="input-group-reel-name">
             <label for="reel-name">릴 이름</label>
             <div class="input-wrapper">
                 <input type="text" id="reel-name" placeholder="ex:venga">
