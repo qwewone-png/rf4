@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>장비 내구도 계산기</title>
+    <title>릴 뽀각 시뮬레이터</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
         body {
             font-family: 'Noto Sans KR', sans-serif;
             background-color: #f0f2f5;
@@ -57,6 +59,7 @@
         .input-group .input-wrapper {
             display: flex;
             align-items: center;
+            width: 140px;
         }
         .input-group input {
             padding: 8px 10px;
@@ -72,10 +75,17 @@
             border-color: #007bff;
             outline: none;
         }
+        .input-group input::placeholder {
+            color: #ccc;
+        }
         .input-group .unit {
             margin-left: 5px;
             color: #666;
             font-size: 0.9em;
+            width: 30px;
+        }
+        .input-group .no-unit {
+            width: 30px;
         }
         .select-group {
             display: flex;
@@ -147,7 +157,7 @@
         .gauge-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 5px; /* 간격을 20px에서 5px로 줄임 */
             flex: 1 1 350px;
             max-width: 400px;
             align-items: center;
@@ -158,7 +168,7 @@
             align-items: center;
             width: 100%;
             padding: 20px;
-            background-color: #444;
+            background-color: #ffffff;
             border-radius: 10px;
             opacity: 0;
             transition: opacity 0.5s ease;
@@ -168,12 +178,12 @@
             font-size: 1.1em;
             font-weight: 600;
             text-align: center;
-            color: #fff;
+            color: #333;
             margin-bottom: 5px;
         }
         .gauge-wrapper .subtitle {
             font-size: 0.9em;
-            color: #bbb;
+            color: #777;
             margin-top: 1px;
             margin-bottom: 10px;
         }
@@ -229,9 +239,17 @@
             height: 120px;
             position: relative;
             margin: 15px auto;
+            background-color: #444;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .circular-gauge-svg {
-            transform: rotate(-90deg); /* 12시 방향에서 시작하도록 설정 */
+            transform: rotate(-90deg);
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         .circular-gauge-bg {
             fill: none;
@@ -245,17 +263,13 @@
             fill: none;
             stroke: #fff;
             stroke-width: 3;
-            stroke-linecap: butt; /* 끝을 둥글지 않게 만듦 */
+            stroke-linecap: butt;
             transition: stroke-dasharray 0.3s ease-in-out;
             r: 50px;
             cx: 60px;
             cy: 60px;
         }
         .circular-gauge-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             text-align: center;
             color: #fff;
         }
@@ -267,7 +281,7 @@
             text-align: center;
             margin-top: 10px;
             line-height: 1.4;
-            color: #ccc;
+            color: #777;
             font-size: 0.9em;
         }
         .gauge-description .highlight {
@@ -303,13 +317,23 @@
             font-size: 0.9em;
             font-weight: 600;
         }
+        .damage-limit {
+            margin-top: 10px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #444;
+        }
+        .pogak-warning {
+            color: #dc3545;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
 <div class="main-content">
     <div class="container">
-        <h1>장비 내구도 계산기</h1>
+        <h1>릴 뽀각 시뮬레이터</h1>
 
         <div class="select-group">
             <select id="saved-reels">
@@ -320,47 +344,50 @@
 
         <div class="input-group">
             <label for="reel-name">릴 이름</label>
-            <input type="text" id="reel-name" placeholder="예: 릴 1호">
+            <div class="input-wrapper">
+                <input type="text" id="reel-name" placeholder="예: 릴 1호">
+                <span class="unit no-unit"></span>
+            </div>
         </div>
         <div class="input-group">
             <label for="reel-max">릴 내부하중 (인게임미표시)</label>
             <div class="input-wrapper">
-                <input type="number" id="reel-max" placeholder="60.00" value="60.00" step="0.1">
+                <input type="number" id="reel-max" placeholder="0.00" step="0.01">
                 <span class="unit">kg</span>
             </div>
         </div>
         <div class="input-group">
-            <label for="reel-damage">메커니즘 손상도</label>
+            <label for="reel-wear">메커니즘 손상도</label>
             <div class="input-wrapper">
-                <input type="number" id="reel-damage" placeholder="10.55" value="0.00" step="0.1">
+                <input type="number" id="reel-wear" placeholder="0.0" step="0.1">
                 <span class="unit">%</span>
             </div>
         </div>
         <div class="input-group">
             <label for="brake-max">마찰 브레이크 최대 하중</label>
             <div class="input-wrapper">
-                <input type="number" id="brake-max" placeholder="40.00" value="40.00" step="0.1">
+                <input type="number" id="brake-max" placeholder="0.0" step="0.1">
                 <span class="unit">kg</span>
             </div>
         </div>
         <div class="input-group">
-            <label for="brake-damage">마찰 브레이크 손상도</label>
+            <label for="brake-wear">마찰 브레이크 손상도</label>
             <div class="input-wrapper">
-                <input type="number" id="brake-damage" placeholder="8.75" value="0.00" step="0.1">
+                <input type="number" id="brake-wear" placeholder="0.0" step="0.1">
                 <span class="unit">%</span>
             </div>
         </div>
         <div class="input-group">
             <label for="leader-max">목줄 최대 하중</label>
             <div class="input-wrapper">
-                <input type="number" id="leader-max" placeholder="50.00" step="0.1">
+                <input type="number" id="leader-max" placeholder="0.0" step="0.1">
                 <span class="unit">kg</span>
             </div>
         </div>
         <div class="input-group">
-            <label for="leader-damage">목줄 손상도</label>
+            <label for="leader-wear">목줄 손상도</label>
             <div class="input-wrapper">
-                <input type="number" id="leader-damage" placeholder="5.55" value="0.00" step="0.1">
+                <input type="number" id="leader-wear" placeholder="0.0" step="0.1">
                 <span class="unit">%</span>
             </div>
         </div>
@@ -383,6 +410,7 @@
             <div class="gauge-text">
                 <div class="gauge-value" id="reel-gauge-value"></div>
             </div>
+            <p class="damage-limit" id="max-reel-wear-text"></p>
         </div>
         <div class="gauge-wrapper" id="circular-gauge-wrapper">
             <h3>마브 vs 목줄</h3>
@@ -411,11 +439,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const numberInputs = document.querySelectorAll('.input-group input[type="number"]');
     const reelNameInput = document.getElementById('reel-name');
     const reelMaxInput = document.getElementById('reel-max');
-    const reelDamageInput = document.getElementById('reel-damage');
+    const reelWearInput = document.getElementById('reel-wear');
     const leaderMaxInput = document.getElementById('leader-max');
-    const leaderDamageInput = document.getElementById('leader-damage');
+    const leaderWearInput = document.getElementById('leader-wear');
     const brakeMaxInput = document.getElementById('brake-max');
-    const brakeDamageInput = document.getElementById('brake-damage');
+    const brakeWearInput = document.getElementById('brake-wear');
     const deleteBtn = document.getElementById('delete-btn');
     const savedReelsSelect = document.getElementById('saved-reels');
 
@@ -429,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const reelPointer = document.getElementById('reel-pointer');
     const reelGaugeValue = document.getElementById('reel-gauge-value');
+    const maxReelWearText = document.getElementById('max-reel-wear-text');
     
     const dragLevelDisplay = document.getElementById('drag-level-display');
     const dragStatusText = document.getElementById('drag-status-text');
@@ -459,6 +488,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     reelNameInput.addEventListener('change', calculateAndSave);
+    
+    reelMaxInput.placeholder = '0.00';
+    reelWearInput.placeholder = '0.0';
+    brakeMaxInput.placeholder = '0.0';
+    brakeWearInput.placeholder = '0.0';
+    leaderMaxInput.placeholder = '0.0';
+    leaderWearInput.placeholder = '0.0';
 
     function loadReelList() {
         savedReelsSelect.innerHTML = '<option value="">새로운 릴</option>';
@@ -470,6 +506,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         reelKeys.sort();
+        
+        if (reelKeys.length === 0) {
+            const venga6000Data = {
+                reelMax: '69.66',
+                reelWear: '0.0',
+                leaderMax: '31.5',
+                leaderWear: '0.0',
+                brakeMax: '23.7',
+                brakeWear: '0.0'
+            };
+            localStorage.setItem('reel_Venga 6000', JSON.stringify(venga6000Data));
+            reelKeys.push('reel_Venga 6000');
+        }
+
         reelKeys.forEach(key => {
             const reelName = key.substring(5);
             const option = document.createElement('option');
@@ -486,21 +536,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getColorForValue(value, min, max) {
-        // 값의 범위를 0-1로 정규화
         let normalizedValue = (value - min) / (max - min);
         normalizedValue = Math.max(0, Math.min(1, normalizedValue));
 
         let red, green, blue;
-
-        // 빨강 -> 노랑 (0.0 ~ 0.5)
         if (normalizedValue <= 0.5) {
             const ratio = normalizedValue / 0.5;
             red = 220;
             green = Math.round(193 * ratio);
             blue = Math.round(53 * ratio);
-        }
-        // 노랑 -> 초록 (0.5 ~ 1.0)
-        else {
+        } else {
             const ratio = (normalizedValue - 0.5) / 0.5;
             red = Math.round(220 * (1 - ratio));
             green = 193 + Math.round((168 - 193) * ratio);
@@ -508,34 +553,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return `rgb(${red}, ${green}, ${blue})`;
     }
+    
+    function truncateDecimal(number, decimalPlaces) {
+        const factor = Math.pow(10, decimalPlaces);
+        return Math.trunc(number * factor) / factor;
+    }
 
-    function updateReelGauge(reelPerformance, leaderPerformance) {
+    function updateReelGauge(reelPerformance, leaderPerformance, reelMax, leaderMax, reelWear, leaderWear) {
         const excessLoadKg = reelPerformance - leaderPerformance;
-        const minVal = -5; // 최소값 (빨강)
-        const maxVal = 20; // 최대값 (초록)
+        const minVal = -5;
+        const maxVal = 20;
         
         const color = getColorForValue(excessLoadKg, minVal, maxVal);
         
-        // 정규화된 값 계산, 0~100% 범위로 제한
         let normalizedValue = ((excessLoadKg - minVal) / (maxVal - minVal)) * 100;
         normalizedValue = Math.max(0, Math.min(100, normalizedValue));
 
         updateLinearGauge(reelPointer, normalizedValue);
         
-        reelGaugeValue.innerHTML = `내부하중: ${reelPerformance.toFixed(2)}kg<br>목줄: ${leaderPerformance.toFixed(2)}kg<br><span id="excess-load-wrapper" style="color:${color};">여유하중: ${excessLoadKg.toFixed(2)}kg</span>`;
+        reelGaugeValue.innerHTML = `내부하중: ${truncateDecimal(reelPerformance, 2)}kg<br>목줄: ${truncateDecimal(leaderPerformance, 2)}kg<br><span id="excess-load-wrapper" style="color:${color};">여유하중: ${truncateDecimal(excessLoadKg, 2)}kg</span>`;
+
+        let maxReelWear = 0;
+        if (leaderMax > 0 && reelMax > 0) {
+            const numerator = leaderMax * ((100 - leaderWear) / 100);
+            maxReelWear = 100 - (numerator / reelMax * 100);
+        } else if (leaderMax === 0) {
+            maxReelWear = 100;
+        }
+
+        const remainingWear = maxReelWear - reelWear;
+        
+        const truncatedRemainingWear = truncateDecimal(remainingWear, 1);
+        const truncatedMaxReelWear = truncateDecimal(maxReelWear, 1);
+
+        if (truncatedRemainingWear < 0) {
+            maxReelWearText.innerHTML = `릴 메커니즘 파손 위험`;
+            maxReelWearText.style.color = '#dc3545';
+        } else {
+            maxReelWearText.innerHTML = `메커니즘 손상도 여유 : ${truncatedRemainingWear}%<br>릴 뽀각 손상도(추정): ${truncatedMaxReelWear}%`;
+            maxReelWearText.style.color = '#444';
+        }
     }
     
     function updateLinearGauge(pointer, normalizedValue) {
         const position = normalizedValue;
-        // 게이지 바깥으로 나가지 않도록 0~100 범위로 제한
         const clampedPosition = Math.max(0, Math.min(100, position));
         pointer.style.left = `${clampedPosition}%`;
     }
 
-    function updateCircularGauge(brakePerformance, leaderMax, leaderDamage) {
+    function updateCircularGauge(brakePerformance, leaderMax, leaderWear) {
         const maxDragSteps = 29;
         const dragPerStep = brakePerformance / maxDragSteps;
-        const currentLeaderPerformance = leaderMax * ((100 - leaderDamage) / 100);
+        const currentLeaderPerformance = leaderMax * ((100 - leaderWear) / 100);
 
         const maxUsableDragSteps = Math.floor(currentLeaderPerformance / dragPerStep);
         const displayDragSteps = Math.min(maxUsableDragSteps, maxDragSteps);
@@ -544,7 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dashoffset = circumference * (1 - progress);
         circularGaugeFill.style.strokeDashoffset = dashoffset;
         
-        if (displayDragSteps === 0) {
+        if (displayDragSteps === 0 || isNaN(displayDragSteps)) {
             dragLevelDisplay.textContent = '0';
             dragStatusText.innerHTML = '경고! 1단계 드래그도 사용 불가';
             circularGaugeFill.style.stroke = '#fff';
@@ -555,11 +624,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const requiredLeaderPerformance = displayDragSteps * dragPerStep;
-        const requiredLeaderDamage = 100 - (requiredLeaderPerformance / leaderMax * 100);
-        const maxUsableDamage = parseFloat(requiredLeaderDamage.toFixed(2));
+        const requiredLeaderWear = 100 - (requiredLeaderPerformance / leaderMax * 100);
+        const maxUsableWear = parseFloat(requiredLeaderWear.toFixed(2));
         
         if (requiredLeaderPerformance <= currentLeaderPerformance) {
-            dragSustainabilityText.textContent = `(목줄 손상도 ${maxUsableDamage}%까지)`;
+            dragSustainabilityText.textContent = `(목줄 손상도 ${truncateDecimal(maxUsableWear, 1)}%까지)`;
             dragSustainabilityText.classList.remove('danger');
         } else {
             dragSustainabilityText.textContent = `(목줄 내구도 부족으로 사용 불가)`;
@@ -570,12 +639,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateWarnings(currentReelPerformance, currentBrakePerformance, currentLeaderPerformance) {
         let warnings = [];
         
+        // 마찰 브레이크 경고
         if (currentBrakePerformance > currentReelPerformance) {
-            warnings.push("마찰 브레이크 하중이 릴 내부하중보다 높습니다. 릴 손상에 유의하세요.");
+            warnings.push("마찰 브레이크 하중이 릴 내부하중보다 높습니다.");
         }
         
+        // 목줄 하중 경고
         if (currentLeaderPerformance > currentReelPerformance) {
-            warnings.push("목줄 하중이 릴 내부하중보다 높습니다. 릴 손상에 유의하세요.");
+            warnings.push("목줄 하중이 릴 내부하중보다 높습니다.");
+        }
+        
+        // 목줄 교체 위험 경고 (요청에 맞게 수정)
+        const reelMax = parseFloat(reelMaxInput.value);
+        const leaderMax = parseFloat(leaderMaxInput.value);
+        const currentLeaderWear = parseFloat(leaderWearInput.value);
+        
+        // 현재 목줄이 릴보다 약한 상태 (즉, 릴이 버티는 상태)
+        if (leaderMax * ((100 - currentLeaderWear) / 100) < reelMax) {
+            // 하지만 목줄을 새것(0% 손상)으로 교체하면 릴을 초과하는 경우
+            if (leaderMax * (100 / 100) > reelMax) {
+                warnings.push("목줄이 낡아서 다행입니다. 만약 교체한다면 릴 내구한계를 초과합니다.");
+            }
         }
 
         if (warnings.length > 0) {
@@ -587,50 +671,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function calculateAndSave() {
+        const inputs = [reelMaxInput, reelWearInput, brakeMaxInput, brakeWearInput, leaderMaxInput, leaderWearInput];
+        inputs.forEach(input => {
+            if (input.value === '') {
+                input.value = '0';
+            }
+        });
+
         const reelName = reelNameInput.value.trim();
         const reelMax = parseFloat(reelMaxInput.value);
-        const reelDamage = parseFloat(reelDamageInput.value);
+        const reelWear = parseFloat(reelWearInput.value);
         const leaderMax = parseFloat(leaderMaxInput.value);
-        const leaderDamage = parseFloat(leaderDamageInput.value);
+        const leaderWear = parseFloat(leaderWearInput.value);
         const brakeMax = parseFloat(brakeMaxInput.value);
-        const brakeDamage = parseFloat(brakeDamageInput.value);
+        const brakeWear = parseFloat(brakeWearInput.value);
 
-        if (!reelName) {
+        if (!reelName || isNaN(reelMax) || isNaN(reelWear) || isNaN(leaderMax) || isNaN(leaderWear) || isNaN(brakeMax) || isNaN(brakeWear)) {
             showResults(false);
             return;
         }
-        if (isNaN(reelMax) || isNaN(reelDamage) || isNaN(leaderMax) || isNaN(leaderDamage) || isNaN(brakeMax) || isNaN(brakeDamage)) {
-            showResults(false);
-            return;
-        }
-        if (reelDamage < 0 || reelDamage > 100 || leaderDamage < 0 || leaderDamage > 100 || brakeDamage < 0 || brakeDamage > 100) {
+        if (reelWear < 0 || reelWear > 100 || leaderWear < 0 || leaderWear > 100 || brakeWear < 0 || brakeWear > 100) {
             showResults(false);
             return;
         }
 
-        const currentReelPerformance = reelMax * ((100 - reelDamage) / 100);
-        const currentBrakePerformance = brakeMax * ((100 - brakeDamage) / 100);
-        const currentLeaderPerformance = leaderMax * ((100 - leaderDamage) / 100);
+        const currentReelPerformance = reelMax * ((100 - reelWear) / 100);
+        const currentBrakePerformance = brakeMax * ((100 - brakeWear) / 100);
+        const currentLeaderPerformance = leaderMax * ((100 - leaderWear) / 100);
         
         const reelData = {
             reelMax: reelMaxInput.value,
-            reelDamage: reelDamageInput.value,
+            reelWear: reelWearInput.value,
             leaderMax: leaderMaxInput.value,
-            leaderDamage: leaderDamageInput.value,
+            leaderWear: leaderWearInput.value,
             brakeMax: brakeMaxInput.value,
-            brakeDamage: brakeDamageInput.value
+            brakeWear: brakeWearInput.value
         };
         localStorage.setItem(`reel_${reelName}`, JSON.stringify(reelData));
         
-        const reelPerformanceEl = document.getElementById('current-reel-performance');
-        reelPerformanceEl.textContent = `내부하중: ${currentReelPerformance.toFixed(2)} kg`;
-        reelPerformanceEl.style.color = '#333';
-        
-        currentBrakePerformanceP.textContent = `마찰브레이크: ${currentBrakePerformance.toFixed(2)} kg`;
-        currentLeaderPerformanceP.textContent = `목줄: ${currentLeaderPerformance.toFixed(2)} kg`;
+        currentReelPerformanceP.textContent = `내부하중: ${truncateDecimal(currentReelPerformance, 2)} kg`;
+        currentBrakePerformanceP.textContent = `마찰브레이크: ${truncateDecimal(currentBrakePerformance, 2)} kg`;
+        currentLeaderPerformanceP.textContent = `목줄: ${truncateDecimal(currentLeaderPerformance, 2)} kg`;
 
-        updateReelGauge(currentReelPerformance, currentLeaderPerformance);
-        updateCircularGauge(currentBrakePerformance, leaderMax, leaderDamage);
+        updateReelGauge(currentReelPerformance, currentLeaderPerformance, reelMax, leaderMax, reelWear, leaderWear);
+        updateCircularGauge(currentBrakePerformance, leaderMax, leaderWear);
         updateWarnings(currentReelPerformance, currentBrakePerformance, currentLeaderPerformance);
 
         showResults(true);
@@ -644,24 +728,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const savedData = localStorage.getItem(`reel_${selectedReelName}`);
             if (savedData) {
                 const data = JSON.parse(savedData);
-                reelNameInput.value = selectedReelName;
+                reelNameInput.value = data.reelMax ? selectedReelName : '';
                 reelMaxInput.value = data.reelMax;
-                reelDamageInput.value = data.reelDamage;
+                reelWearInput.value = data.reelWear;
                 leaderMaxInput.value = data.leaderMax;
-                leaderDamageInput.value = data.leaderDamage;
-                brakeMaxInput.value = data.brakeMax || '40.00';
-                brakeDamageInput.value = data.brakeDamage || '0.00';
+                leaderWearInput.value = data.leaderWear;
+                brakeMaxInput.value = data.brakeMax;
+                brakeWearInput.value = data.brakeWear;
                 calculateAndSave();
             }
         } else {
             showResults(false);
             reelNameInput.value = '';
-            reelMaxInput.value = '60.00';
-            reelDamageInput.value = '0.00';
+            reelMaxInput.value = '';
+            reelWearInput.value = '';
             leaderMaxInput.value = '';
-            leaderDamageInput.value = '0.00';
-            brakeMaxInput.value = '40.00';
-            brakeDamageInput.value = '0.00';
+            leaderWearInput.value = '';
+            brakeMaxInput.value = '';
+            brakeWearInput.value = '';
             warningBox.style.display = 'none';
         }
     });
@@ -679,12 +763,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loadReelList();
             showResults(false);
             reelNameInput.value = '';
-            reelMaxInput.value = '60.00';
-            reelDamageInput.value = '0.00';
+            reelMaxInput.value = '';
+            reelWearInput.value = '';
             leaderMaxInput.value = '';
-            leaderDamageInput.value = '0.00';
-            brakeMaxInput.value = '40.00';
-            brakeDamageInput.value = '0.00';
+            leaderWearInput.value = '';
+            brakeMaxInput.value = '';
+            brakeWearInput.value = '';
             warningBox.style.display = 'none';
         }
     });
