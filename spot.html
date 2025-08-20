@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>스팟 저장소</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5; /* 밝은 배경색 */
+    margin: 0; padding: 0; /* body 여백 제거 */
+    color: #333; /* 더 부드러운 글자색 */
+  }
+  #app-container {
+    max-width: 950px;
+    margin: 20px auto;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 20px;
+    user-select: none;
+    position: relative; /* 자식 요소의 absolute 위치 기준 */
+  }
+  
+  /* 햄버거 메뉴 버튼 스타일 */
+  .hamburger-menu {
+      position: fixed; /* 고정 위치 */
+      top: 15px;
+      left: 15px; /* 왼쪽으로 변경 */
+      width: 30px;
+      height: 25px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      z-index: 20; /* 다른 요소 위로 */
+  }
+  .hamburger-menu .bar {
+      width: 100%;
+      height: 3px;
+      background-color: #333;
+      transition: all 0.3s ease;
+      border-radius: 2px;
+  }
+  
+  /* 햄버거 메뉴 버튼 클릭 시 X자로 변형 */
+  .hamburger-menu.open .bar:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+  }
+  .hamburger-menu.open .bar:nth-child(2) {
+      opacity: 0;
+  }
+  .hamburger-menu.open .bar:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+  }
+
+  /* 사이드 메뉴 스타일 */
+  .side-menu {
+      position: fixed;
+      top: 0;
+      left: 0; /* 왼쪽으로 변경 */
+      width: 250px; /* 메뉴 너비 */
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(5px);
+      box-shadow: 4px 0 15px rgba(0,0,0,0.1); /* 그림자 방향 변경 */
+      transform: translateX(-100%); /* 기본적으로 숨겨진 상태 (왼쪽으로) */
+      transition: transform 0.3s ease-in-out;
+      z-index: 15;
+      padding-top: 60px; /* 상단 여백 */
+  }
+  .side-menu.open {
+      transform: translateX(0); /* 메뉴가 열린 상태 */
+  }
+  .side-menu .menu-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+  }
+  .side-menu .menu-list li a {
+      display: block;
+      padding: 15px 20px;
+      font-size: 18px;
+      color: #333;
+      text-decoration: none;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.2s ease;
+  }
+  .side-menu .menu-list li a:hover {
+      background-color: #f0f2f5;
+  }
+  .map-selector-group {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .map-selector-group label {
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 16px;
+    color: #555;
+  }
+  .map-selector-group select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: #f8f8f8;
+    cursor: pointer;
+  }
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end; /* 오른쪽 끝으로 정렬 */
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .action-buttons .btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .action-buttons .btn.reset-btn {
+      background-color: #e74c3c;
+      color: white;
+  }
+  .action-buttons .btn.reset-btn:hover {
+      background-color: #c0392b;
+  }
+  canvas {
+    display: block;
+    margin: 0 auto;
+    cursor: crosshair; /* 기본 마우스 커서 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f0f0f0; 
+    touch-action: none; /* 터치스크린에서 기본 스크롤 동작 방지 */
+  }
+  #instructionText { 
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden; /* 모서리 둥글게 처리 */
+  }
+  th, td {
+    padding: 12px 10px; /* 패딩 증가 */
+    border: 1px solid #eee;
+    text-align: center;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  th {
+    background: #34495e; /* 어두운 청록색 */
+    color: white;
+    font-weight: 600;
+  }
+  /* 컬럼 너비 조정 (100% 합계 기준) */
+  th:nth-child(1), td:nth-child(1) { width: 5%; }       /* 순번 */
+  th:nth-child(2), td:nth-child(2) { width: 15%; }      /* 등록 시간 */
+  th:nth-child(3), td:nth-child(3) { width: 8%; }       /* 좌표 */
+  th:nth-child(4), td:nth-child(4) { width: 8%; }       /* 클립(m) */
+  th:nth-child(5), td:nth-child(5) { width: 25%; }      /* 미끼 정보 (넓힘) */
+  th:nth-child(6), td:nth-child(6) { width: 13%; }      /* 주요 어종 */
+  th:nth-child(7), td:nth-child(7) { width: 15%; }      /* 메모 (넓힘) */
+  th:nth-child(8), td:nth-child(8) { width: 9%; }       /* 관리 (숨기기/삭제 버튼 통합, 더 좁힘) */
+  .reset-th {
+    width: 9%; 
+  }
+  /* 초기화 버튼 스타일 */
+  #reset-data-btn {
+      background-color: #e74c3c;
+      color: white;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: none;
+      width: auto;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+  }
+  #reset-data-btn:hover {
+      background-color: #c0392b;
+  }
+  #reset-data-btn:active {
+      background-color: #a93226;
+  }
+  /* 정말요? 텍스트가 한 줄로 나오도록 크기 조정 */
+  #reset-data-btn.confirm-reset {
+      font-size: 11px;
+      padding: 6px 8px;
+  }
+  /* 버튼 공통 스타일 */
+  .spot-btn {
+    background: #3498db;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 6px 10px; /* 버튼 패딩 조절 */
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    display: block; /* 세로 배치 */
+    margin: 2px auto;
+    width: calc(100% - 4px); /* 셀 너비에 맞게 조절 */
+  }
+  .spot-btn:hover {
+    background: #2980b9;
+  }
+  .spot-btn:active {
+      background: #2471a3;
+  }
+  
+  /* 버튼 간 간격 */
+  .hide-btn {
+      margin-bottom: 2px;
+  }
+  button.delete-btn {
+    background: #e74c3c;
+  }
+  button.delete-btn:hover {
+    background: #c0392b;
+  }
+  /* 숨겨진 행 스타일 */
+  tr.hidden-spot {
+    opacity: 0.5; /* 흐리게 */
+    background-color: #f5f5f5; /* 배경색 변경 */
+  }
+  tr.hidden-spot .hide-btn {
+      background-color: #f1c40f; /* 숨겨진 상태일 때 버튼 색상 변경 (노란색) */
+  }
+  tr.hidden-spot .hide-btn:hover {
+      background-color: #f39c12;
+  }
+  tr.hidden-spot .hide-btn:active {
+       background-color: #d3980c;
+  }
+  td[contenteditable="true"]:focus {
+    outline: 2px solid #4CAF50; 
+    background-color: #f9f9f9;
+  }
+  /* 트롤링 모드 좌표/클립은 편집 불가 */
+  .trolling-mode-spot td[data-field="coords"], .trolling-mode-spot td[data-field="distanceM"] {
+    background-color: #fafafa;
+    cursor: not-allowed;
+  }
+  .trolling-mode-spot td[data-field="coords"][contenteditable="true"], .trolling-mode-spot td[data-field="distanceM"][contenteditable="true"] {
+    cursor: not-allowed;
+    pointer-events: none; /* 클릭 비활성화 */
+  }
+  /* 마우스 커서에 따라다니는 좌표 툴팁 스타일 */
+  #coordsTooltip {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #222;
+    padding: 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+    color: #222;
+    pointer-events: none; /* 마우스 이벤트가 툴팁을 통과하도록 설정 */
+    z-index: 1000;
+    display: none; /* 기본적으로 숨김 */
+    white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 설정 */
+  }
+</style>
+</head>
+<body>
+  <div class="hamburger-menu" id="hamburgerMenu">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+  </div>
+  
+  <nav class="side-menu" id="sideMenu">
+      <ul class="menu-list">
+          <li><a href="index.html">뽀각 시뮬레이터</a></li>
+          <li><a href="#">스팟 저장소</a></li>
+      </ul>
+  </nav>
+
+  <div id="app-container">
+    <div class="map-selector-group">
+        <label for="map-select">맵 변경</label>
+        <select id="map-select">
+            <option value="mosquito-lake">모기호수</option>
+            <option value="elk-lake">엘크 호수</option>
+            <option value="winding-rivulet">굽이치는 개울</option>
+            <option value="old-burg-lake">올드 버그 호수</option>
+            <option value="belaya-river">벨라야 강</option>
+            <option value="kuori-lake">쿠오리 호수</option>
+            <option value="bear-lake">곰 호수</option>
+            <option value="volkhov-river">볼호프 강</option>
+            <option value="seversky-donets-river">세베르스키 도네츠 강</option>
+            <option value="sura-river">수라 강</maption>
+            <option value="ladoga-lake">라도가 호수</maption>
+            <option value="amber-lake">엠버 호수</maption>
+            <option value="ladoga-archipelago">라도가 군도</maption>
+            <option value="akhtuba-river">악투바 강</maption>
+            <option value="copper-lake">카퍼 호수</option>
+            <option value="nizhnyaya-tunguska-river">니즈냐야 퉁구스카 강</maption>
+            <option value="yama-river">야마 강</maption>
+            <option value="norwegian-sea">노르웨이 해</maption>
+        </select>
+    </div>
+    
+    <canvas id="fishingMapCanvas"></canvas>
+    
+    <div id="instructionText">휠:확대/축소. 휠클릭:이동. `Shift`+클릭드래그:트롤링.</div>
+    
+    <table id="spotTable" aria-label="낚시 스팟 목록">
+      <thead>
+        <tr>
+          <th>순번</th>
+          <th>등록 시간</th>
+          <th>좌표</th> 
+          <th>클립(m)</th> 
+          <th>미끼</th> 
+          <th>어종</th> 
+          <th>메모</th> 
+          <th class="reset-th"><button id="reset-data-btn">초기화</button></th> </tr>
+      </thead>
+      <tbody>
+        </tbody>
+    </table>
+  </div>
+  <div id="coordsTooltip"></div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('fishingMapCanvas');
+  const ctx = canvas.getContext('2d');
+  const spotTableBody = document.querySelector('#spotTable tbody');
+  const mapSelect = document.getElementById('map-select'); // 맵 선택 드롭다운
+  const resetDataBtn = document.getElementById('reset-data-btn');
+  const coordsTooltip = document.getElementById('coordsTooltip');
+  const hamburgerMenu = document.getElementById('hamburgerMenu'); // 햄버거 메뉴 버튼
+  const sideMenu = document.getElementById('sideMenu'); // 사이드 메뉴
+  let mapImage = new Image();
+  let currentMapId = mapSelect.value; // 현재 선택된 맵 ID (기본값 copper-lake)
+  
+  let isDrawing = false; // 그리기 상태 (마우스 왼쪽 클릭 드래그)
+  let isPanning = false; // 지도 패닝 상태 (마우스 휠 클릭 드래그)
+  let currentSpot = null; // 현재 그리는 중인 스팟 데이터 객체 (일반, 트롤링 공통)
+  let arrows = []; // 현재 맵의 스팟 데이터 배열
+  // 삭제 버튼의 2단계 확인을 위한 임시 저장 변수
+  let lastConfirmedDeleteSpotId = null;
+  // 초기화 버튼의 2단계 확인을 위한 임시 저장 변수
+  let isResetting = false;
+  // 마우스 커서 위치를 추적하기 위한 전역 변수
+  let mouseOnCanvas = false;
+  let mouseScreenX = 0;
+  let mouseScreenY = 0;
+  let canvasRect = canvas.getBoundingClientRect(); // 캔버스 위치 정보
+  // 캔버스 물리적 크기 (뷰포트)
+  const canvasPhysicalWidth = 800; 
+  const canvasPhysicalHeight = 600; 
+  // 줌 및 패닝 상태 변수
+  let currentScale = 1.0;  // 현재 줌 레벨
+  let panX = 0;            // 현재 X축 패닝 오프셋
+  let panY = 0;            // 현재 Y축 패닝 오프셋
+  let lastMouseX = 0; // 패닝 드래그 시작 시 마우스 X (스크린 픽셀)
+  let lastMouseY = 0; // 패닝 드래그 시작 시 마우스 Y (스크린 픽셀)
+  const zoomFactor = 1.1;   // 줌 인/아웃 시 배율
+  const maxScale = 3.0;     // 최대 줌 레벨
+  const minScale = 1.0;     // 최소 줌 레벨: 원본 크기 이하로 축소 방지 
+  // 화살표/핀 색상 팔레트 (12가지) - 대비 강화
+  const colorPalette = [
+    { main: 'rgba(255, 0, 0, 0.7)', text: 'red' },              // 1. 빨강
+    { main: 'rgba(255, 140, 0, 0.9)', text: 'orange' },         // 2. 주황
+    { main: 'rgba(34, 139, 34, 0.8)', text: 'forestgreen' },    // 3. 짙은 초록
+    { main: 'rgba(0, 0, 255, 0.7)', text: 'blue' },             // 4. 파랑
+    { main: 'rgba(128, 0, 128, 0.7)', text: 'purple' },         // 5. 보라
+    { main: 'rgba(0, 255, 255, 0.7)', text: 'cyan' },           // 6. 시안
+    { main: 'rgba(255, 0, 255, 0.7)', text: 'magenta' },      // 7. 마젠타
+    { main: 'rgba(0, 128, 128, 0.8)', text: 'teal' },           // 8. 청록색
+    { main: 'rgba(165, 42, 42, 0.7)', text: 'brown' },          // 9. 갈색
+    { main: 'rgba(255, 215, 0, 0.8)', text: 'gold' },           // 10. 금색
+    { main: 'rgba(255, 20, 147, 0.7)', text: 'deeppink' },      // 11. 딥핑크
+    { main: 'rgba(30, 144, 255, 0.7)', text: 'dodgerblue' }     // 12. 다저블루
+  ];
+  
+  // 맵의 전체 길이는 (그리드값 * 10) * (972 / 896) 으로 계산함
+  const gridFactor = (972 / 896);
+  // 각 맵의 고유 설정 정의 (이미지 경로, 논리 좌표, 실제 미터 길이)
+  const mapConfigs = {
+    'mosquito-lake': {
+      label: '모기호수',
+      image: 'images/maps/mosquito_lake.png',
+      coordXStart: 30, coordXEnd: 112, 
+      coordYStart: 33.8, coordYEnd: 115,
+      grid_value: 35,
+      mapWidthMeter: 35 * 10 * gridFactor, 
+      mapHeightMeter: 35 * 10 * gridFactor 
+    },
+    'elk-lake': {
+        label: '엘크 호수',
+        image: 'images/maps/elk_lake.png',
+        coordXStart: 38, coordXEnd: 162,
+        coordYStart: 38, coordYEnd: 162,
+        grid_value: 57,
+        mapWidthMeter: 57 * 10 * gridFactor, 
+        mapHeightMeter: 57 * 10 * gridFactor
+    },
+    'winding-rivulet': {
+        label: '굽이치는 개울',
+        image: 'images/maps/winding_rivulet.png',
+        coordXStart: 45, coordXEnd: 142,
+        coordYStart: 54, coordYEnd: 151,
+        grid_value: 44,
+        mapWidthMeter: 44 * 10 * gridFactor, 
+        mapHeightMeter: 44 * 10 * gridFactor
+    },
+    'old-burg-lake': {
+        label: '올드 버그 호수',
+        image: 'images/maps/old_burg_lake.png',
+        coordXStart: 0, coordXEnd: 83,
+        coordYStart: 0, coordYEnd: 83,
+        grid_value: 39,
+        mapWidthMeter: 39 * 10 * gridFactor, 
+        mapHeightMeter: 39 * 10 * gridFactor
+    },
+    'belaya-river': {
+        label: '벨라야 강',
+        image: 'images/maps/belaya_river.png',
+        coordXStart: 0, coordXEnd: 114,
+        coordYStart: -7, coordYEnd: 107,
+        grid_value: 50,
+        mapWidthMeter: 50 * 10 * gridFactor, 
+        mapHeightMeter: 50 * 10 * gridFactor
+    },
+    'kuori-lake': {
+        label: '쿠오리 호수',
+        image: 'images/maps/kuori_lake.png',
+        coordXStart: 53, coordXEnd: 149,
+        coordYStart: 53, coordYEnd: 149,
+        grid_value: 45,
+        mapWidthMeter: 45 * 10 * gridFactor, 
+        mapHeightMeter: 45 * 10 * gridFactor
+    },
+    'bear-lake': {
+        label: '곰 호수',
+        image: 'images/maps/bear_lake.png',
+        coordXStart: 5, coordXEnd: 95,
+        coordYStart: 3, coordYEnd: 93,
+        grid_value: 42,
+        mapWidthMeter: 42 * 10 * gridFactor, 
+        mapHeightMeter: 42 * 10 * gridFactor
+    },
+    'volkhov-river': {
+        label: '볼호프 강',
+        image: 'images/maps/volkhov_river.png',
+        coordXStart: -8, coordXEnd: 210,
+        coordYStart: -8, coordYEnd: 208.5,
+        grid_value: 100,
+        mapWidthMeter: 100 * 10 * gridFactor, 
+        mapHeightMeter: 100 * 10 * gridFactor
+    },
+    'seversky-donets-river': {
+        label: '세베르스키 도네츠 강',
+        image: 'images/maps/seversky_donets_river.png',
+        coordXStart: 5, coordXEnd: 196,
+        coordYStart: 4, coordYEnd: 195,
+        grid_value: 90,
+        mapWidthMeter: 90 * 10 * gridFactor, 
+        mapHeightMeter: 90 * 10 * gridFactor
+    },
+    'sura-river': {
+        label: '수라 강',
+        image: 'images/maps/sura_river.png',
+        coordXStart: -2, coordXEnd: 163,
+        coordYStart: 0, coordYEnd: 165,
+        grid_value: 83,
+        mapWidthMeter: 83 * 10 * gridFactor, 
+        mapHeightMeter: 83 * 10 * gridFactor
+    },
+    'ladoga-lake': {
+        label: '라도가 호수',
+        image: 'images/maps/ladoga_lake.png',
+        coordXStart: 5, coordXEnd: 102,
+        coordYStart: 0, coordYEnd: 97,
+        grid_value: 45,
+        mapWidthMeter: 45 * 10 * gridFactor, 
+        mapHeightMeter: 45 * 10 * gridFactor
+    },
+    'amber-lake': {
+        label: '엠버 호수',
+        image: 'images/maps/the_amber_lake.png',
+        coordXStart: 0, coordXEnd: 194,
+        coordYStart: 18, coordYEnd: 213,
+        grid_value: 90,
+        mapWidthMeter: 90 * 10 * gridFactor, 
+        mapHeightMeter: 90 * 10 * gridFactor
+    },
+    'ladoga-archipelago': {
+        label: '라도가 군도',
+        image: 'images/maps/ladoga_archipelago.png',
+        coordXStart: -26, coordXEnd: 625,
+        coordYStart: -26, coordYEnd: 625,
+        grid_value: 300,
+        mapWidthMeter: 300 * 10 * gridFactor, 
+        mapHeightMeter: 300 * 10 * gridFactor
+    },
+    'akhtuba-river': { 
+        label: '악투바 강',
+        image: 'images/maps/akhtuba_river.png',
+        coordXStart: -7, coordXEnd: 208,
+        coordYStart: -9, coordYEnd: 207,
+        grid_value: 98,
+        mapWidthMeter: 98 * 10 * gridFactor, 
+        mapHeightMeter: 98 * 10 * gridFactor
+    },
+    'copper-lake': { 
+        label: '카퍼 호수',
+        image: 'images/maps/copper_lake.png', // 이미지 경로
+        coordXStart: 23.9, coordXEnd: 77.9, 
+        coordYStart: 23, coordYEnd: 77, // Y좌표를 오름차순으로 수정
+        grid_value: 25,
+        mapWidthMeter: 25 * 10 * gridFactor, 
+        mapHeightMeter: 25 * 10 * gridFactor 
+    },
+    'nizhnyaya-tunguska-river': {
+        label: '니즈냐야 퉁구스카 강',
+        image: 'images/maps/lower_tunguska_river.png',
+        coordXStart: -11, coordXEnd: 251,
+        coordYStart: -11, coordYEnd: 251,
+        grid_value: 120,
+        mapWidthMeter: 120 * 10 * gridFactor, 
+        mapHeightMeter: 120 * 10 * gridFactor
+    },
+    'yama-river': {
+        label: '야마 강',
+        image: 'images/maps/yama_river.png',
+        coordXStart: -12, coordXEnd: 310,
+        coordYStart: -12, coordYEnd: 311,
+        grid_value: 150,
+        mapWidthMeter: 150 * 10 * gridFactor, 
+        mapHeightMeter: 150 * 10 * gridFactor
+    },
+    'norwegian-sea': {
+        label: '노르웨이 해',
+        image: 'images/maps/norwegian_sea.png', // 이미지 경로
+        coordXStart: -40, coordXEnd: 1050,
+        coordYStart: -40, coordYEnd: 1050,
+        grid_value: 500,
+        mapWidthMeter: 500 * 10 * gridFactor, 
+        mapHeightMeter: 500 * 10 * gridFactor
+    }
+  };
+  // 텍스트 색상 밝기 판별 헬퍼 (모든 텍스트 테두리 검은색으로 고정)
+  function isDarkColor(colorName) {
+      const colorMap = {
+          'red': [255, 0, 0], 'orange': [255, 165, 0], 'forestgreen': [34, 139, 34], 'blue': [0, 0, 255], 'purple': [128, 0, 128],
+          'cyan': [0, 255, 255], 'magenta': [255, 0, 255], 'teal': [0, 128, 128], 'brown': [165, 42, 42], 'gold': [255, 215, 0],
+          'deeppink': [255, 20, 147], 'dodgerblue': [30, 144, 255]
+      };
+      const rgb = colorMap[colorName];
+      if (!rgb) return false; 
+      const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+      return brightness < 128; 
+  }
+  // 논리 좌표(X:Y) -> 캔버스 내 모델 픽셀 좌표 변환 (현재 activeMapConfig 사용)
+  function coordToCanvasPixel(coord) {
+    const config = getActiveMapConfig();
+    const px = (coord.x - config.coordXStart) / (config.coordXEnd - config.coordXStart) * canvas.width;
+    const py = canvas.height - ((coord.y - config.coordYStart) / (config.coordYEnd - config.coordYStart) * canvas.height); // Y축 반전
+    return { px, py };
+  }
+  // 화면 픽셀 (마우스 위치) -> 캔버스 내부 모델 픽셀 좌표 변환 (줌/패닝 역적용)
+  function screenPixelToCanvasPixel(screenX, screenY) {
+    const canvasPxX = (screenX - panX) / currentScale;
+    const canvasPxY = (screenY - panY) / currentScale;
+    return { px: canvasPxX, py: canvasPxY };
+  }
+  // 캔버스 내부 모델 픽셀 좌표 -> 논리 좌표(X:Y) 변환 (현재 activeMapConfig 사용)
+  function canvasPixelToCoord(canvasPxX, canvasPxY) {
+    const config = getActiveMapConfig();
+    let cx = config.coordXStart + (canvasPxX / canvas.width) * (config.coordXEnd - config.coordXStart);
+    let cy = config.coordYStart + ((canvas.height - canvasPxY) / canvas.height) * (config.coordYEnd - config.coordYStart); // Y축 반전
+    // 트롤링 모드 부드러운 선을 위해 반올림 로직 제거
+    cx = Math.round(cx); 
+    cy = Math.round(cy + 0.4); 
+    return { x: cx, y: cy };
+  }
+  
+  // 캔버스 내부 모델 픽셀 좌표 -> 논리 좌표(X:Y) 변환 (반올림 없이)
+  function canvasPixelToCoord_raw(canvasPxX, canvasPxY) {
+      const config = getActiveMapConfig();
+      const cx = config.coordXStart + (canvasPxX / canvas.width) * (config.coordXEnd - config.coordXStart);
+      const cy = config.coordYStart + ((canvas.height - canvasPxY) / canvas.height) * (config.coordYEnd - config.coordYStart); // Y축 반전
+      return { x: cx, y: cy };
+  }
+  // 두 캔버스 픽셀 간의 실제 미터 거리 계산 (현재 activeMapConfig 사용)
+  function calculateMeterDistanceBetweenCanvasPixels(startCanvasPxX, startCanvasPxY, endCanvasPxX, endCanvasPxY) {
+    const config = getActiveMapConfig();
+    const meterPerCanvasPixelX = config.mapWidthMeter / canvas.width;
+    const meterPerCanvasPixelY = config.mapHeightMeter / canvas.height;
+    const dx_meter = (endCanvasPxX - startCanvasPxX) * meterPerCanvasPixelX;
+    const dy_meter = (endCanvasPxY - startCanvasPxY) * meterPerCanvasPixelY;
+    return Math.round(Math.sqrt(dx_meter * dx_meter + dy_meter * dy_meter));
+  }
+  // 맵 설정 가져오기 (현재 활성화된 맵)
+  function getActiveMapConfig() {
+      return mapConfigs[currentMapId];
+  }
+  mapImage.onload = () => {
+    // 캔버스 크기를 이미지 비율에 맞춰 조정 (가로세로 비율 유지)
+    const imgAspectRatio = mapImage.width / mapImage.height;
+    const canvasAspectRatio = canvasPhysicalWidth / canvasPhysicalHeight;
+    if (imgAspectRatio > canvasAspectRatio) { // 이미지가 캔버스 최대 너비보다 가로로 김 (너비에 맞춤)
+      canvas.width = canvasPhysicalWidth;
+      canvas.height = canvasPhysicalWidth / imgAspectRatio;
+    } else { // 이미지가 캔버스 최대 높이보다 세로로 길거나 같음 (높이에 맞춤)
+      canvas.height = canvasPhysicalHeight;
+      canvas.width = canvasPhysicalHeight * imgAspectRatio;
+    }
+    
+    canvasRect = canvas.getBoundingClientRect(); // 캔버스 위치 정보 업데이트
+    loadArrowsFromStorage(); // 맵 로드 후 해당 맵의 스팟 불러오기
+    redraw(); 
+  };
+  mapImage.onerror = () => {
+    console.error(' 지도 이미지를 불러올 수 없습니다. 경로를 확인해 주세요:', mapImage.src);
+    //alert(' 지도 이미지를 불러올 수 없습니다. 경로가 맞는지 확인해 주세요: ' + mapImage.src);
+    redraw(); // 이미지가 없어도 일단 그리기 함수는 호출
+  };
+  // 맵 이미지 로드 (초기 로드 또는 맵 변경 시 호출)
+  function loadMapImage(mapId) {
+      const config = mapConfigs[mapId];
+      if (!config) {
+          console.error("존재하지 않는 맵 ID입니다:", mapId);
+          //alert("선택한 맵 정보를 찾을 수 없습니다.");
+          return;
+      }
+      // 현재 맵 ID 업데이트
+      currentMapId = mapId;
+      // 맵 이미지 로드 (새로운 이미지 로드 시작)
+      mapImage.src = config.image; // mapImage.onload가 자동으로 호출됨
+      
+      // 맵 변경 시 줌/패닝 초기화 (새로운 맵이므로)
+      currentScale = 1.0;
+      panX = 0;
+      panY = 0;
+  }
+  
+  // 캔버스 전체를 다시 그리는 핵심 함수
+  function redraw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 줌/패닝 변환 적용
+    ctx.save();
+    ctx.translate(panX, panY);
+    ctx.scale(currentScale, currentScale);
+    
+    // 이미지 그리기
+    ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
+    // 저장된 모든 스팟 그리기
+    arrows.forEach((arrow, index) => drawSpot(arrow, index));
+    
+    // 현재 그리고 있는 스팟이 있으면 그리기
+    if (isDrawing && currentSpot) {
+      // 마우스 위치를 캔버스 픽셀로 변환
+      const mouseCanvasPx = screenPixelToCanvasPixel(mouseScreenX, mouseScreenY);
+      
+      if (currentSpot.isTrolling) {
+          drawSpot(currentSpot, arrows.length, mouseCanvasPx); // 트롤링 모드
+      } else {
+          // 일반 모드 드래그 화살표 그리기
+          const startCanvasPx = coordToCanvasPixel(currentSpot.coordStart);
+          const dragDX_canvas = mouseCanvasPx.px - startCanvasPx.px;
+          const dragDY_canvas = mouseCanvasPx.py - startCanvasPx.py;
+          // 실시간으로 dragVector와 distanceM 업데이트 (저장은 mouseup에서)
+          currentSpot.dragVector = { dx: -dragDX_canvas, dy: -dragDY_canvas };
+          currentSpot.distanceM = calculateMeterDistanceBetweenCanvasPixels(startCanvasPx.px, startCanvasPx.py, mouseCanvasPx.px, mouseCanvasPx.py);
+          drawSpot(currentSpot, arrows.length); // 일반 모드
+      }
+    }
+    // 변환 초기화
+    ctx.restore();
+  }
+  // 화살표 그리기 핵심 함수
+  function drawSpot(spotData, index, currentCanvasPx=null) {
+    // 숨겨진 스팟은 그리지 않음
+    if (spotData.hidden) {
+      return; 
+    }
+    ctx.save(); // 개별 요소 그리기 전에 그리기 상태 저장 (나중에 복원)
+    // 텍스트 테두리/그림자 설정 (모든 텍스트 검은색 테두리 + 검은색 그림자)
+    ctx.shadowColor = 'black'; 
+    ctx.shadowBlur = 2; 
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    ctx.lineWidth = 1; // 텍스트 테두리 삭제, 하지만 라인 그리기 위해서 남겨둠
+    if (spotData.isTrolling) {
+        // 트롤링 모드 (경로 그리기)
+        const pathPoints = spotData.pathPoints;
+        if (pathPoints.length < 2 && !currentCanvasPx) return;
+        ctx.strokeStyle = spotData.color.main;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(pathPoints[0].px, pathPoints[0].py);
+        // 정식 경로 그리기
+        for (let i = 1; i < pathPoints.length; i++) {
+            ctx.lineTo(pathPoints[i].px, pathPoints[i].py);
+        }
+        // 현재 마우스 위치까지의 임시 경로 그리기
+        let lastPoint = currentCanvasPx ? currentCanvasPx : pathPoints[pathPoints.length - 1];
+        if (currentCanvasPx) {
+            ctx.lineTo(currentCanvasPx.px, currentCanvasPx.py);
+        }
+        ctx.stroke();
+        // 화살표 머리 그리기 (경로의 마지막 두 점으로 각도 계산)
+        const headRadius = 4; // 아주 작은 원의 반지름
+        ctx.fillStyle = spotData.color.main;
+        let lastPointToDraw = currentCanvasPx ? currentCanvasPx : pathPoints[pathPoints.length - 1];
+        ctx.beginPath();
+        ctx.arc(lastPointToDraw.px, lastPointToDraw.py, headRadius, 0, 2 * Math.PI);
+        ctx.fill();
+        // 시작 지점에 원형 핀 및 인덱스 숫자 표시
+        const startPoint = pathPoints[0];
+        const pinRadius = 10; 
+        
+        ctx.beginPath();
+        ctx.fillStyle = spotData.color.main; 
+        ctx.arc(startPoint.px, startPoint.py, pinRadius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillStyle = 'white'; 
+        ctx.font = `bold 12px Arial`; 
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(index + 1, startPoint.px, startPoint.py);
+        // 좌표 텍스트 그리기 (핀 옆)
+        const coordTextOffsetX = pinRadius + 6; 
+        
+        ctx.font = `12px monospace`; 
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = spotData.color.text;                                                       
+        ctx.fillText(`${formatCoord(canvasPixelToCoord(startPoint.px, startPoint.py))}`, startPoint.px + coordTextOffsetX, startPoint.py);
+    } else {
+        // 일반 모드 (직선 화살표 그리기)
+        const startCanvasPx = coordToCanvasPixel(spotData.coordStart); 
+        const startX_canvas = startCanvasPx.px;
+        const startY_canvas = startCanvasPx.py;
+        let endX_canvas, endY_canvas;
+        let angle; // 화살표 선의 실제 각도 (팁 방향 결정용)
+        
+        // "활 당기듯" 드래그 반대 방향으로 화살표를 그림
+        endX_canvas = startX_canvas + spotData.dragVector.dx;
+        endY_canvas = startY_canvas + spotData.dragVector.dy;
+        angle = Math.atan2(spotData.dragVector.dy, spotData.dragVector.dx);
+        const distanceM = spotData.distanceM; 
+        const color = spotData.color; 
+        const coordStart = spotData.coordStart; 
+        
+        // 화살표 선 그리기
+        ctx.strokeStyle = color.main; 
+        ctx.lineWidth = 3; 
+        ctx.beginPath();
+        ctx.moveTo(startX_canvas, startY_canvas);
+        ctx.lineTo(endX_canvas, endY_canvas);
+        ctx.stroke();
+        // 화살표 머리 그리기 (끝에만)
+        const headLen = 15; 
+        ctx.fillStyle = color.main; 
+        ctx.beginPath();
+        let arrowTipAngle = angle;
+        ctx.moveTo(endX_canvas, endY_canvas);
+        ctx.lineTo(endX_canvas - headLen * Math.cos(arrowTipAngle - Math.PI / 7), endY_canvas - headLen * Math.sin(arrowTipAngle - Math.PI / 7));
+        ctx.lineTo(endX_canvas - headLen * Math.cos(arrowTipAngle + Math.PI / 7), endY_canvas - headLen * Math.sin(arrowTipAngle + Math.PI / 7));
+        ctx.closePath();
+        ctx.fill();
+        // 거리(m) 텍스트 그리기 
+        let textX_canvas, textY_canvas;
+        
+        // 핀 위치는 항상 시작점
+        const pinX_canvas = startX_canvas;
+        const pinY_canvas = startY_canvas;
+        // 거리계 위치: 끝점에 가깝게
+        const textOffsetFromEnd = 10; 
+        const textAngleOffset = Math.PI / 16; 
+        textX_canvas = endX_canvas + textOffsetFromEnd * Math.cos(angle + textAngleOffset);
+        textY_canvas = endY_canvas + textOffsetFromEnd * Math.sin(angle + textAngleOffset);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `16px monospace`; 
+        ctx.fillStyle = color.text;                   
+        ctx.fillText(`${distanceM}m`, textX_canvas, textY_canvas);
+        // 시작 지점에 원형 핀 및 인덱스 숫자 표시
+        const pinRadius = 10; 
+        
+        ctx.beginPath();
+        ctx.fillStyle = color.main; 
+        ctx.arc(pinX_canvas, pinY_canvas, pinRadius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillStyle = 'white'; 
+        ctx.font = `bold 12px Arial`; 
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(index + 1, pinX_canvas, pinY_canvas); 
+        // 좌표 텍스트 그리기 (핀 옆)
+        const coordTextOffsetX = pinRadius + 6; 
+        ctx.font = `12px monospace`; 
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        // 시작 좌표만 표시
+        ctx.fillStyle = color.text;                                                       
+        ctx.fillText(`${formatCoord(coordStart)}`, pinX_canvas + coordTextOffsetX, pinY_canvas);
+    }
+    // 그림자/테두리 설정 초기화
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.restore(); // 개별 요소 그리기 상태 복원
+  }
+  // 마우스 이벤트 핸들러: 실시간 좌표 표시 및 그리기/패닝 로직 분리
+  // 변경: mousemove와 mouseup을 캔버스 대신 document에 부착하여 캔버스 밖에서도 동작하도록 수정
+  document.addEventListener('mousemove', (e) => {
+    // 캔버스에 대한 상대 좌표 계산
+    const rect = canvas.getBoundingClientRect();
+    const currentScreenX = e.clientX - rect.left;
+    const currentScreenY = e.clientY - rect.top;
+    
+    // 마우스가 캔버스 영역 안에 있는지 확인
+    const mouseInCanvasBounds = currentScreenX >= 0 && currentScreenX <= rect.width &&
+                                currentScreenY >= 0 && currentScreenY <= rect.height;
+    // 마우스 위치 전역 변수 업데이트
+    mouseScreenX = currentScreenX; 
+    mouseScreenY = currentScreenY;
+    
+    // 좌표 툴팁 업데이트 (마우스가 캔버스 안에 있을 때만)
+    if (mouseInCanvasBounds) {
+        const canvasPx = screenPixelToCanvasPixel(mouseScreenX, mouseScreenY);
+        const coord = canvasPixelToCoord(canvasPx.px, canvasPx.py);
+        const coordText = `${coord.x}:${coord.y}`;
+        coordsTooltip.textContent = coordText;
+        coordsTooltip.style.left = `${e.clientX + 15}px`;
+        coordsTooltip.style.top = `${e.clientY + 15}px`;
+        coordsTooltip.style.display = 'block';
+    } else {
+        coordsTooltip.style.display = 'none'; // 캔버스 밖이면 숨기기
+    }
+    if (isPanning) {
+        // 패닝 중일 때는 캔버스 밖으로 나가도 계속 패닝
+        canvas.style.cursor = 'grabbing'; 
+        const dx = e.clientX - lastMouseX;
+        const dy = e.clientY - lastMouseY;
+        panX += dx;
+        panY += dy;
+        limitPan(); // 패닝 범위 제한
+        redraw();
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+    } else if (isDrawing) {
+        // 그리기 중일 때는 캔버스 밖으로 나가도 계속 그리기
+        e.preventDefault(); 
+        canvas.style.cursor = 'crosshair'; 
+        const canvasPx = screenPixelToCanvasPixel(currentScreenX, currentScreenY);
+        if (currentSpot.isTrolling) {
+            currentSpot.pathPoints.push(canvasPx);
+        }
+        redraw();
+    } else {
+        canvas.style.cursor = mouseInCanvasBounds ? 'crosshair' : 'default'; 
+        redraw();
+    }
+  });
+  document.addEventListener('mouseup', (e) => {
+    if (e.button === 1) { // 휠 클릭 떼기
+        isPanning = false;
+        canvas.style.cursor = 'crosshair';
+    } else if (e.button === 0) { // 왼쪽 클릭 떼기
+        if (isDrawing && currentSpot) {
+            let saveSpot = false;
+            const rect = canvas.getBoundingClientRect();
+            const endCanvasPx = screenPixelToCanvasPixel(e.clientX - rect.left, e.clientY - rect.top);
+            
+            if (currentSpot.isTrolling) {
+                if (currentSpot.pathPoints.length > 1) {
+                   saveSpot = true;
+                }
+            } else {
+                const startCanvasPx = coordToCanvasPixel(currentSpot.coordStart);
+                const dragDX_canvas = endCanvasPx.px - startCanvasPx.px;
+                const dragDY_canvas = endCanvasPx.py - startCanvasPx.py;
+                const distancePx = Math.sqrt(Math.pow(dragDX_canvas, 2) + Math.pow(dragDY_canvas, 2));
+                if (distancePx > 10) {
+                    currentSpot.dragVector = { dx: -dragDX_canvas, dy: -dragDY_canvas };
+                    currentSpot.distanceM = calculateMeterDistanceBetweenCanvasPixels(startCanvasPx.px, startCanvasPx.py, endCanvasPx.px, endCanvasPx.py);
+                    saveSpot = true;
+                }
+            }
+            if (saveSpot) {
+                const now = new Date();
+                const timeStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }) +
+                                ' ' + now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                currentSpot.time = timeStr;
+                arrows.push(currentSpot);
+                saveArrows();
+                addSpotToTable(currentSpot, arrows.length - 1); 
+            }
+        }
+        isDrawing = false; 
+        currentSpot = null;
+        redraw(); 
+    }
+  });
+  // 마우스 다운 이벤트 (패닝 시작 또는 그리기 시작)
+  canvas.addEventListener('mousedown', (e) => {
+    e.preventDefault(); // 기본 브라우저 동작 방지
+    const rect = canvas.getBoundingClientRect();
+    const startScreenX = e.clientX - rect.left;
+    const startScreenY = e.clientY - rect.top;
+    if (e.button === 1) { // 마우스 휠 클릭 (가운데 버튼)
+        isPanning = true;
+        lastMouseX = e.clientX; 
+        lastMouseY = e.clientY;
+        canvas.style.cursor = 'grabbing';
+    } else if (e.button === 0) { // 마우스 왼쪽 클릭
+        if (isDrawing || isPanning) return; 
+        isDrawing = true;
+        const nextColor = colorPalette[arrows.length % colorPalette.length];
+        const isTrollingMode = e.shiftKey;
+        const canvasPx = screenPixelToCanvasPixel(startScreenX, startScreenY);
+        const startCoord = canvasPixelToCoord(canvasPx.px, canvasPx.py);
+        if (isTrollingMode) {
+             currentSpot = {
+                id: Date.now(),
+                isTrolling: true,
+                pathPoints: [canvasPx],
+                distanceM: 0,
+                baitInfo: '', 
+                targetFish: '', 
+                remarks: '', 
+                color: nextColor,
+                hidden: false,
+             };
+        } else {
+            currentSpot = {
+                id: Date.now(),
+                isTrolling: false,
+                coordStart: startCoord,
+                dragVector: { dx: 0, dy: 0 },
+                distanceM: 0,
+                baitInfo: '', 
+                targetFish: '', 
+                remarks: '', 
+                color: nextColor,
+                hidden: false,
+                startCanvasX: canvasPx.px, 
+                startCanvasY: canvasPx.py 
+            };
+        }
+        redraw(); 
+    }
+  });
+  // 스크롤 휠 이벤트 (확대/축소)
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault(); 
+    const oldScale = currentScale;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    if (e.deltaY < 0) { // 스크롤 업 (확대)
+        currentScale = Math.min(maxScale, currentScale * zoomFactor);
+    } else { // 스크롤 다운 (축소)
+        currentScale = Math.max(minScale, currentScale / zoomFactor); 
+    }
+    panX = mouseX - ((mouseX - panX) / oldScale) * currentScale;
+    panY = mouseY - ((mouseY - panY) / oldScale) * currentScale;
+    
+    limitPan(); 
+    redraw();
+  }, { passive: false }); 
+  // 키보드 이벤트 (WASD로 패닝, +/-로 줌)
+  document.addEventListener('keydown', (e) => {
+    // 키 입력이 편집 가능한 요소에 포커스되어 있을 경우, 함수를 종료합니다.
+    if (e.target.isContentEditable) {
+      return;
+    }
+    
+    const panStep = 30; // 키보드 패닝 이동 거리
+    let changed = false;
+    // 패닝/줌 조작
+    if (e.key === 'w' || e.key === 'W') { panY += panStep; changed = true; }
+    else if (e.key === 's' || e.key === 'S') { panY -= panStep; changed = true; }
+    else if (e.key === 'a' || e.key === 'A') { panX += panStep; changed = true; }
+    else if (e.key === 'd' || e.key === 'D') { panX -= panStep; changed = true; }
+    else if (e.key === '+' || e.key === '=') { // + (등호)
+        const oldScale = currentScale;
+        currentScale = Math.min(maxScale, currentScale * zoomFactor);
+        panX = (panX - (canvas.width/2)) * (currentScale / oldScale) + (canvas.width/2);
+        panY = (panY - (canvas.height/2)) * (currentScale / oldScale) + (canvas.height/2);
+        changed = true;
+    }
+    else if (e.key === '-') {
+        const oldScale = currentScale;
+        currentScale = Math.max(minScale, currentScale / zoomFactor); 
+        panX = (panX - (canvas.width/2)) * (currentScale / oldScale) + (canvas.width/2);
+        panY = (panY - (canvas.height/2)) * (currentScale / oldScale) + (canvas.height/2);
+        changed = true;
+    }
+    if (changed) {
+      e.preventDefault(); 
+      limitPan();
+      redraw();
+    }
+  });
+  // 스팟을 표에 추가하는 함수
+  function addSpotToTable(spot, index) {
+    const tr = document.createElement('tr');
+    tr.dataset.id = spot.id; 
+    // 숨기기 상태에 따른 클래스 추가
+    if (spot.hidden) {
+        tr.classList.add('hidden-spot');
+    }
+    // 트롤링 모드에 따른 클래스 추가
+    if (spot.isTrolling) {
+        tr.classList.add('trolling-mode-spot');
+    }
+    // 트롤링 모드일 경우 거리 표기 방식 변경
+    let distanceText = spot.distanceM;
+    let formattedCoord = '';
+    if (spot.isTrolling) {
+      distanceText = '(트롤링)';
+      // 트롤링 모드 시작/끝 좌표 표시
+      const startCoord = canvasPixelToCoord(spot.pathPoints[0].px, spot.pathPoints[0].py);
+      const endCoord = canvasPixelToCoord(spot.pathPoints[spot.pathPoints.length - 1].px, spot.pathPoints[spot.pathPoints.length - 1].py);
+      formattedCoord = `${formatCoord(startCoord)}<br>~<br>${formatCoord(endCoord)}`;
+    } else {
+      formattedCoord = `${formatCoord(spot.coordStart)}`;
+    }
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${spot.time}</td>
+      <td class="editable" data-field="coords" data-old-value="${formattedCoord}" contenteditable="${!spot.isTrolling}">${formattedCoord}</td>
+      <td class="editable" data-field="distanceM" data-old-value="${spot.distanceM}" contenteditable="${!spot.isTrolling}">${distanceText}</td>
+      <td class="editable" data-field="baitInfo" data-old-value="${escapeHtml(spot.baitInfo)}" contenteditable="true">${escapeHtml(spot.baitInfo)}</td>
+      <td class="editable" data-field="targetFish" data-old-value="${escapeHtml(spot.targetFish)}" contenteditable="true">${escapeHtml(spot.targetFish)}</td>
+      <td class="editable" data-field="remarks" data-old-value="${escapeHtml(spot.remarks)}" contenteditable="true">${escapeHtml(spot.remarks)}</td>
+      <td>
+        <button class="hide-btn spot-btn" data-spot-id="${spot.id}">${spot.hidden ? '보이기' : '숨기기'}</button>
+        <button class="delete-btn spot-btn" aria-label="스팟 삭제" data-spot-id="${spot.id}">삭제</button>
+      </td>
+    `;
+    // 편집 가능한 셀에 이벤트 리스너 추가
+    tr.querySelectorAll('.editable').forEach(cell => {
+      cell.addEventListener('blur', (e) => {
+        const spotId = parseInt(e.target.closest('tr').dataset.id);
+        handleTableEdit(spotId, e.target.dataset.field, e.target.textContent.trim());
+      });
+      cell.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.target.blur();
+        }
+      });
+      // 값 변경 시 data-old-value 속성 업데이트
+      cell.addEventListener('input', (e) => {
+        e.target.dataset.oldValue = e.target.textContent.trim();
+      });
+    });
+    // 숨기기 버튼 클릭 이벤트
+    tr.querySelector('.hide-btn').addEventListener('click', (e) => {
+        const spotId = parseInt(e.target.dataset.spotId);
+        // lastConfirmedDeleteSpotId 초기화 (숨기기 버튼 클릭 시 삭제 확인 취소)
+        lastConfirmedDeleteSpotId = null; 
+        resetDeleteButtonText();
+        isResetting = false; // 초기화 버튼 상태도 초기화
+        resetDataBtn.textContent = '초기화';
+        toggleSpotVisibility(spotId);
+    });
+    // 삭제 버튼 클릭 이벤트
+    tr.querySelector('.delete-btn').addEventListener('click', (e) => {
+        const spotId = parseInt(e.target.dataset.spotId);
+        if (lastConfirmedDeleteSpotId === spotId) {
+            // 두 번째 클릭: 삭제 실행
+            removeSpotById(spotId);
+            lastConfirmedDeleteSpotId = null; // 초기화
+        } else {
+            // 첫 번째 클릭: 확인 메시지 표시
+            resetDeleteButtonText(); // 다른 버튼 눌렀을 수 있으므로 먼저 초기화
+            e.target.textContent = '정말요?';
+            lastConfirmedDeleteSpotId = spotId;
+        }
+    });
+    spotTableBody.appendChild(tr);
+  }
+  // 테이블 데이터 수정 시 배열 및 로컬스토리지 업데이트
+  function handleTableEdit(id, field, value) {
+    const spotIndex = arrows.findIndex(s => s.id === id);
+    if (spotIndex === -1) return; 
+    // 모든 삭제 버튼 텍스트 초기화
+    lastConfirmedDeleteSpotId = null;
+    resetDeleteButtonText();
+    isResetting = false; 
+    resetDataBtn.textContent = '초기화';
+    const spot = arrows[spotIndex];
+    let isChanged = false;
+    if (field === 'coords' && !spot.isTrolling) {
+        const coordsMatch = value.match(/(\d+):(\d+)/);
+        if (coordsMatch) {
+            const newX = parseInt(coordsMatch[1]);
+            const newY = parseInt(coordsMatch[2]);
+            // 기존과 동일한 값인지 확인
+            if (newX !== spot.coordStart.x || newY !== spot.coordStart.y) {
+                spot.coordStart = { x: newX, y: newY };
+                isChanged = true;
+            }
+        } else {
+            // 유효하지 않은 입력이면 되돌리기
+            revertTableText(id, field);
+            return;
+        }
+    } else if (field === 'distanceM' && !spot.isTrolling) {
+        const distanceValue = parseInt(value);
+        if (!isNaN(distanceValue) && distanceValue >= 0) {
+            // 기존과 동일한 값인지 확인
+            if (distanceValue !== spot.distanceM) {
+                // 새로운 거리에 맞춰 dragVector 재계산
+                const config = getActiveMapConfig();
+                const meterPerCanvasPixelX = config.mapWidthMeter / canvas.width;
+                const newDistancePx = distanceValue / meterPerCanvasPixelX; 
+                const oldStartPx = coordToCanvasPixel(spot.coordStart);
+                const oldEndPx = { px: oldStartPx.px + spot.dragVector.dx, py: oldStartPx.py + spot.dragVector.dy };
+                const dx_canvas = oldEndPx.px - oldStartPx.px;
+                const dy_canvas = oldEndPx.py - oldStartPx.py;
+                const oldDistancePx = Math.sqrt(dx_canvas * dx_canvas + dy_canvas * dy_canvas);
+                if (oldDistancePx > 0) {
+                    spot.dragVector.dx = (dx_canvas / oldDistancePx) * newDistancePx;
+                    spot.dragVector.dy = (dy_canvas / oldDistancePx) * newDistancePx;
+                } else {
+                    // 기존 거리가 0인 경우, 기본값 설정
+                    spot.dragVector.dx = newDistancePx;
+                    spot.dragVector.dy = newDistancePx;
+                }
+                spot.distanceM = distanceValue;
+                isChanged = true;
+            }
+        } else {
+            revertTableText(id, field);
+            return;
+        }
+    } else if (field === 'baitInfo' || field === 'targetFish' || field === 'remarks') {
+        if (spot[field] !== value) {
+            spot[field] = value;
+            isChanged = true;
+        }
+    }
+    if (isChanged) {
+      saveArrows(); 
+      redraw(); 
+    }
+  }
+  // 테이블 셀의 내용을 이전 값으로 되돌리는 함수
+  function revertTableText(id, field) {
+      const row = document.querySelector(`tr[data-id="${id}"]`);
+      if (row) {
+          const cell = row.querySelector(`td[data-field="${field}"]`);
+          if (cell) {
+              const oldValue = cell.dataset.oldValue;
+              cell.innerHTML = oldValue;
+          }
+      }
+  }
+  // 모든 삭제 버튼 텍스트를 "삭제"로 초기화하는 함수
+  function resetDeleteButtonText() {
+    spotTableBody.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.textContent = '삭제';
+    });
+  }
+  // 스팟 숨기기/보이기 토글 함수
+  function toggleSpotVisibility(id) {
+    const spotIndex = arrows.findIndex(s => s.id === id);
+    if (spotIndex !== -1) {
+        arrows[spotIndex].hidden = !arrows[spotIndex].hidden; 
+        saveArrows(); 
+        refreshTable(); 
+        redraw(); 
+    }
+  }
+  // 좌표 콜론 (:) 표기 포맷 함수 (내부 사용)
+  function formatCoord(coord) {
+    return `${coord.x}:${coord.y}`;
+  }
+  // 스팟 ID로 삭제 처리
+  function removeSpotById(id) {
+    arrows = arrows.filter(s => s.id !== id);
+    saveArrows();
+    refreshTable(); 
+    redraw(); 
+  }
+  // 테이블 전체를 지우고 배열 데이터로 다시 그리기 (삭제 시 순번 재정렬용)
+  function refreshTable() {
+    spotTableBody.innerHTML = ''; 
+    arrows.forEach((spot, index) => addSpotToTable(spot, index)); 
+  }
+  // 로컬스토리지 저장
+  function saveArrows() {
+    localStorage.setItem(`fishingSpots_${currentMapId}`, JSON.stringify(arrows));
+  }
+  // 로컬스토리지에서 불러와 테이블 채우기 및 데이터 마이그레이션 (맵 ID 기반)
+  function loadArrowsFromStorage() {
+    const data = localStorage.getItem(`fishingSpots_${currentMapId}`); 
+    arrows = data ? JSON.parse(data) : [];
+    
+    arrows.forEach((spot, index) => {
+        if (spot.startX !== undefined && spot.startY !== undefined && spot.endX !== undefined && spot.endY !== undefined && spot.dragVector === undefined) {
+             const startCanvasPxX = spot.startX;
+             const startCanvasPxY = spot.startY;
+             const endCanvasPxX = spot.endX;
+             const endCanvasPxY = spot.endY;
+             spot.dragVector = {
+                 dx: startCanvasPxX - (endCanvasPxX || 0), 
+                 dy: startCanvasPxY - (endCanvasPxY || 0)
+             };
+             delete spot.startX; delete spot.startY; delete spot.endX; delete spot.endY; delete spot.distancePx;
+             console.warn(`Migrated old spot data for ID: ${spot.id}.`);
+        } else if (spot.dragVector === undefined || spot.dragVector.dx === undefined || spot.dragVector.dy === undefined) {
+             spot.dragVector = { dx: 20, dy: 20 }; 
+             console.warn(`Assigned default dragVector for spot ID: ${spot.id}.`);
+        }
+        
+        if (spot.isTrolling && spot.pathPoints.length > 0 && spot.pathPoints[0].x !== undefined) {
+            spot.pathPoints = spot.pathPoints.map(p => coordToCanvasPixel(p));
+            console.warn(`Migrated trolling path data for ID: ${spot.id} from logical coords to canvas pixels.`);
+        }
+        
+        if (typeof spot.color === 'string') {
+            const foundColor = colorPalette.find(c => c.text === spot.color);
+            spot.color = foundColor || colorPalette[index % colorPalette.length]; 
+        } else if (!spot.color) { 
+            spot.color = colorPalette[index % colorPalette.length];
+        }
+        if (spot.baitInfo === undefined) spot.baitInfo = '';
+        if (spot.targetFish === undefined) spot.targetFish = ''; 
+        if (spot.remarks === undefined) spot.remarks = '';
+        if (spot.hidden === undefined) spot.hidden = false; 
+        if (spot.isTrolling === undefined) spot.isTrolling = false; 
+        if (spot.coordEnd === undefined) spot.coordEnd = null; 
+        if (spot.pathPoints === undefined) spot.pathPoints = []; 
+    });
+    refreshTable(); 
+  }
+  // 현재 맵의 모든 데이터를 삭제하는 함수
+  function resetCurrentMapData() {
+      localStorage.removeItem(`fishingSpots_${currentMapId}`);
+      arrows = []; 
+      refreshTable(); 
+      redraw(); 
+  }
+  // XSS 방지용 텍스트 이스케이프 처리
+  function escapeHtml(text) {
+    if (typeof text !== 'string') return text; 
+    return text.replace(/[&<>"']/g, m => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[m]);
+  }
+  // --- 줌 및 패닝 기능 관련 헬퍼 ---
+  function limitPan() {
+    const canvasW = canvas.width;
+    const canvasH = canvas.height;
+    const scaledImgW = canvasW * currentScale;
+    const scaledImgH = canvasH * currentScale;
+    let minPanX = canvasW - scaledImgW; 
+    let maxPanX = 0; 
+    let minPanY = canvasH - scaledImgH;
+    let maxPanY = 0; 
+    if (scaledImgW < canvasW) {
+        minPanX = (canvasW - scaledImgW) / 2;
+        maxPanX = minPanX;
+    }
+    if (scaledImgH < canvasH) {
+        minPanY = (canvasH - scaledImgH) / 2;
+        maxPanY = minPanY;
+    }
+    panX = Math.max(minPanX, Math.min(maxPanX, panX));
+    panY = Math.max(minPanY, Math.min(maxPanY, panY));
+  }
+  // --- 맵 변경 드롭다운 이벤트 리스너 ---
+  mapSelect.addEventListener('change', (event) => {
+      // 트롤링 버그 수정: 맵을 바꾸면 그리기 상태를 초기화합니다.
+      isDrawing = false;
+      currentSpot = null;
+      // 마지막 맵 기억 기능: 로컬 스토리지에 현재 맵 ID를 저장
+      localStorage.setItem('lastViewedMap', event.target.value);
+      loadMapImage(event.target.value); 
+  });
+  // 초기화 버튼 클릭 이벤트 리스너
+  resetDataBtn.addEventListener('click', (e) => {
+    resetDeleteButtonText();
+    lastConfirmedDeleteSpotId = null; 
+    if (isResetting) {
+        resetCurrentMapData();
+        isResetting = false;
+        e.target.textContent = '초기화'; 
+        e.target.classList.remove('confirm-reset'); 
+    } else {
+        isResetting = true;
+        e.target.textContent = '정말요?';
+        e.target.classList.add('confirm-reset'); 
+    }
+  });
+  // 햄버거 메뉴 토글
+  hamburgerMenu.addEventListener('click', () => {
+      hamburgerMenu.classList.toggle('open');
+      sideMenu.classList.toggle('open');
+  });
+  
+  // 초기 맵 로드 (페이지 로드 시)
+  const lastMapId = localStorage.getItem('lastViewedMap');
+  const initialMapId = lastMapId && mapConfigs[lastMapId] ? lastMapId : 'copper-lake';
+  mapSelect.value = initialMapId; // 드롭다운 값 설정
+  loadMapImage(initialMapId); 
+})();
+</script>
+</body>
+</html>
