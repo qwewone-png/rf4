@@ -983,6 +983,83 @@
                 margin-left: 5px;
             }
         }
+
+        /* Mobile-specific adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em; /* Smaller title size */
+            }
+            .select-group .delete-btn {
+                width: 50px; /* Smaller delete button */
+                padding: 6px 8px;
+                font-size: 0.8em;
+            }
+            .wear-controls {
+                flex-direction: row; /* Keep on one line */
+                flex-wrap: wrap; /* Allow wrapping if content is too wide */
+                justify-content: flex-end; /* Align to right */
+                gap: 5px; /* Smaller gap */
+            }
+            .wear-controls select {
+                width: 120px; /* Smaller select width */
+                font-size: 0.8em;
+                padding: 6px 8px;
+            }
+            .wear-controls button {
+                width: 50px; /* Smaller save/delete buttons */
+                padding: 6px 5px;
+                font-size: 0.75em;
+            }
+            .wear-controls label {
+                margin-right: auto; /* Push select and buttons to the right */
+                font-size: 0.9em;
+            }
+
+            .combined-input-group > label {
+                flex-basis: 70px; /* Further reduce label width */
+                font-size: 0.9em;
+            }
+            .combined-input-group .input-wrapper {
+                gap: 3px; /* Smaller gap in input wrapper */
+                min-width: unset;
+                flex-wrap: wrap; /* Allow fields to wrap if needed */
+                justify-content: flex-start;
+            }
+            .combined-input-group .input-wrapper .input-field {
+                flex-basis: auto; /* Allow fields to size naturally */
+                min-width: unset;
+            }
+            .combined-input-group .input-wrapper .input-field label {
+                min-width: 35px; /* Further reduce wear label min-width */
+                font-size: 0.8em;
+            }
+            .combined-input-group .input-wrapper input[type="number"] {
+                width: 50px; /* Smaller input width */
+                padding: 5px;
+                font-size: 0.8em;
+            }
+            .combined-input-group .input-wrapper input.wear-input {
+                width: 45px; /* Smaller wear input width */
+            }
+            .combined-input-group .input-wrapper .unit {
+                width: 20px;
+                font-size: 0.75em;
+                margin-right: 2px;
+            }
+            .wear-diff {
+                width: 50px; /* Smaller wear diff width */
+                font-size: 0.75em;
+            }
+
+            /* Adjust input field and button wrapper to fill space better */
+            .input-field-and-button-wrapper {
+                max-width: none;
+                width: 100%;
+            }
+            .input-group-reel-name input#reel-name {
+                width: 100%; /* Take full width */
+            }
+        }
     </style>
 </head>
 <body>
@@ -1260,7 +1337,7 @@
         <span class="popup-close">&times;</span>
         <h3 class="popup-title">30% 고정값 모드</h3>
         <p>
-            낚싯대 블랭크, 릴 메커니즘, 마찰브레이크는 특별히 최대하중의 30%는 손상도에 영향을 받지 않으며, 나머지 70%에 대해서만 손상도에 비례하여 최대하중이 줄어든다는 설에 따른 계산입니다.
+            낚싯대 블랭크, 릴 메커니즘, 마찰 브레이크의 경우 최대하중의 30%는 손상도에 영향을 받지 않으며, 나머지 70%만 손상도에 비례하여 줄어든다는 설에 따릅니다.
             <br><br>현재하중 = (최대하중 × 0.3) + (최대하중 × 0.7 × (100 - 손상도%) / 100)
         </p>
     </div>
@@ -2056,7 +2133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentReelPerformanceP.textContent = `메커니즘: ${truncateDecimal(currentReelPerformance, 2)} kg`;
         
         currentBrakePerformanceP.style.display = (visibleGroups['brake'] === 'flex') ? 'block' : 'none';
-        currentBrakePerformanceP.textContent = `마찰브레이크: ${truncateDecimal(currentBrakePerformance, 2)} kg`;
+        currentBrakePerformanceP.textContent = `마브 저항: ${truncateDecimal(currentBrakePerformance, 2)} kg`; /* Changed text here */
         
         currentMainLinePerformanceP.style.display = (visibleGroups['main-line'] === 'flex') ? 'block' : 'none';
         currentMainLinePerformanceP.textContent = `원줄: ${truncateDecimal(currentMainLinePerformance, 2)} kg`;
