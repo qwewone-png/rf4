@@ -1338,7 +1338,6 @@
         <h3 class="popup-title">30% 고정값 모드</h3>
         <p>
             낚싯대 블랭크, 릴 메커니즘, 마찰 브레이크의 경우 최대하중의 30%는 손상도에 영향을 받지 않으며, 나머지 70%만 손상도에 비례하여 줄어든다는 설에 따릅니다.
-            <br><br>현재하중 = (최대하중 × 0.3) + (최대하중 × 0.7 × (100 - 손상도%) / 100)
         </p>
     </div>
 </div>
@@ -1805,7 +1804,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateCircularGauge(brakePerformance, otherPerformance, otherMax, otherWear, otherName, model, brakeMax, brakeWear) {
-        document.querySelector('#circular-gauge-wrapper h3').textContent = `브레이크 vs. ${otherName}`; // Changed to "브레이크 vs. ${otherName}"
+        document.querySelector('#circular-gauge-wrapper h3').textContent = `브레이크 vs. ${otherName}`;
         
         const maxDragSteps = 29;
         const dragPerStep = brakePerformance / maxDragSteps;
@@ -1865,8 +1864,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dragSustainabilityText.textContent = `(${weakestComponent} 내구도 부족으로 사용 불가)`;
             dragSustainabilityText.classList.add('danger');
         } else {
-            dragSustainabilityText.textContent = `(${weakestComponent} 손상도 ${truncateDecimal(overallMaxUsableWear, 1)}%까지)`;
-            dragSustainabilityText.classList.remove('danger');
+            dragSustainabilityText.classList.remove('danger'); // Remove danger class if previously added
+            // The text should focus on the 'otherName' wear limit, which is the weakest line.
+            dragSustainabilityText.textContent = `(${otherName} 손상도 ${truncateDecimal(overallMaxUsableWear, 1)}%까지)`;
         }
     }
 
@@ -2687,8 +2687,8 @@ document.addEventListener('DOMContentLoaded', () => {
         p.textContent = message;
         
         const confirmButton = document.createElement('button');
-        confirmButton.textContent = '확인';
-        confirmButton.style.cssText = `
+            confirmButton.textContent = '확인';
+            confirmButton.style.cssText = `
             background-color: #dc3545;
             color: white;
             padding: 8px 15px;
