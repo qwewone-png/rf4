@@ -12,7 +12,7 @@
             background-color: #f0f2f5;
             color: #333;
             line-height: 1.6;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,18 +20,17 @@
             box-sizing: border-box;
         }
         
-        /* 햄버거 메뉴 버튼 스타일 */
         .hamburger-menu {
-            position: fixed; /* 고정 위치 */
-            top: 15px;
-            left: 15px; /* 왼쪽으로 변경 */
+            position: fixed;
+            top: 10px;
+            left: 10px;
             width: 30px;
             height: 25px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             cursor: pointer;
-            z-index: 20; /* 다른 요소 위로 */
+            z-index: 20;
         }
         .hamburger-menu .bar {
             width: 100%;
@@ -41,7 +40,6 @@
             border-radius: 2px;
         }
         
-        /* 햄버거 메뉴 버튼 클릭 시 X자로 변형 */
         .hamburger-menu.open .bar:nth-child(1) {
             transform: rotate(45deg) translate(5px, 5px);
         }
@@ -52,23 +50,22 @@
             transform: rotate(-45deg) translate(5px, -5px);
         }
 
-        /* 사이드 메뉴 스타일 */
         .side-menu {
             position: fixed;
             top: 0;
-            left: 0; /* 왼쪽으로 변경 */
-            width: 250px; /* 메뉴 너비 */
+            left: 0;
+            width: 250px;
             height: 100%;
             background-color: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(5px);
-            box-shadow: 4px 0 15px rgba(0,0,0,0.1); /* 그림자 방향 변경 */
-            transform: translateX(-100%); /* 기본적으로 숨겨진 상태 (왼쪽으로) */
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            transform: translateX(-100%);
             transition: transform 0.3s ease-in-out;
             z-index: 15;
-            padding-top: 60px; /* 상단 여백 */
+            padding-top: 50px;
         }
         .side-menu.open {
-            transform: translateX(0); /* 메뉴가 열린 상태 */
+            transform: translateX(0);
         }
         .side-menu .menu-list {
             list-style-type: none;
@@ -89,28 +86,37 @@
         }
         .main-content {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             justify-content: center;
-            align-items: flex-start;
+            align-items: flex-start; /* Align items to the top */
             flex-wrap: wrap;
             width: 100%;
-            max-width: 900px;
+            max-width: 1050px; /* Adjusted to fit new child widths + gap (600+430+20 = 1050) */
         }
         .container {
-            flex: 1 1 450px;
-            max-width: 500px;
+            flex: 1 1 600px; /* 6 parts */
+            max-width: 600px; /* Adjusted max-width for wider look */
             background-color: #ffffff;
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             border: 2px solid #e0e0e0;
             transition: box-shadow 0.3s ease;
+            box-sizing: border-box; /* Ensure padding is included in the width */
+        }
+        .title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
         }
         h1 {
-            text-align: center;
             color: #1e3a5f;
-            margin-bottom: 30px;
+            margin: 0;
             font-weight: 700;
+            font-size: 1.8em;
+            text-align: left;
         }
         .input-row {
             display: flex;
@@ -165,11 +171,21 @@
         .select-group {
             display: flex;
             gap: 10px;
+            /* Changed from space-between to flex-end */
+            justify-content: flex-end;
             align-items: center;
             margin-bottom: 15px;
         }
+        .select-group label { /* Added label for the dropdown */
+            font-weight: 600;
+            color: #555;
+            white-space: nowrap;
+            /* Added margin-right auto to push items to the right */
+            margin-right: auto;
+        }
         .select-group select {
-            flex-grow: 1;
+            flex-grow: 0; /* Changed from 1 to 0 to prevent excessive growth */
+            width: 180px; /* Set a fixed width */
             padding: 8px 10px;
             font-size: 0.9em;
             border: 1px solid #ccc;
@@ -179,7 +195,7 @@
             background-color: #dc3545;
             color: white;
             padding: 8px 12px;
-            min-width: 80px;
+            width: 60px; /* Reduced width */
             font-size: 0.9em;
             border: none;
             border-radius: 6px;
@@ -195,22 +211,16 @@
             border-radius: 8px;
             border: 1px solid #e9ecef;
             transition: opacity 0.5s ease;
-            opacity: 0;
+            opacity: 1;
         }
         .calculated-values h4 {
             margin-top: 0;
             margin-bottom: 10px;
             font-size: 1.1em;
             color: #1e3a5f;
-            border-bottom: 1px solid #e0e0e0;
             padding-bottom: 5px;
         }
-        .calculated-values p {
-            margin: 5px 0;
-            font-size: 0.9em;
-        }
         
-        /* --- 수정된 부분: 결과 표시를 2열로 변경 --- */
         .results-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -229,39 +239,32 @@
 
         .gauge-container {
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-            flex: 1 1 350px;
-            max-width: 900px;
-            align-items: center;
-        }
-        .gauge-row {
-            display: flex;
-            justify-content: center;
+            flex-direction: row;
+            flex-wrap: wrap;
             gap: 15px;
-            width: 100%;
+            justify-content: center;
+            align-items: flex-start;
+            flex: 1 1 430px;
+            max-width: 430px;
+            transition: all 0.5s ease;
+            box-sizing: border-box;
         }
+
         .gauge-wrapper, .linear-gauge-wrapper, .circular-gauge-wrapper {
             background-color: #ffffff;
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 48%;
-            max-width: 220px;
+            flex: 1 1 calc(50% - 7.5px); /* Half width for smaller gauges */
+            min-width: 150px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
             opacity: 0;
-            transition: opacity 0.5s ease;
-            box-sizing: border-box;
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
         
-        #leadcore-gauge-wrapper {
-            width: 100%;
-            max-width: none;
-            padding: 10px;
-        }
-
         .gauge-wrapper h3, .linear-gauge-wrapper h3 {
             margin: 0;
             font-size: 1em;
@@ -280,7 +283,7 @@
             width: 100%;
             height: 15px;
             background: linear-gradient(to right, #dc3545 0%, #ffc107 50%, #28a745 100%);
-            border-radius: 5px;
+            border-radius: 5_px;
             position: relative;
             margin-bottom: 10px;
         }
@@ -365,6 +368,18 @@
             color: #007bff;
         }
 
+        .danger-text {
+            color: #dc3545 !important;
+        }
+        .pogak-warning {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .safe-text {
+            color: #007bff;
+            font-weight: bold;
+        }
+
         #excess-load-text {
             font-weight: bold;
         }
@@ -374,25 +389,60 @@
         .danger {
             color: #dc3545 !important;
         }
-        .warning-box {
-            display: none;
-            width: 100%;
-            max-width: 350px;
+        
+        #warning-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            align-items: flex-end;
+            max-width: 90%;
+        }
+
+        .single-warning-box {
+            position: relative;
             background-color: #fff3cd;
             border: 1px solid #ffc107;
             color: #856404;
-            padding: 10px;
+            padding: 10px 30px 10px 15px;
             border-radius: 8px;
-            margin-top: 15px;
-            text-align: left;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: display 0.3s ease;
-        }
-        .warning-box p {
-            margin: 0;
             font-size: 0.9em;
             font-weight: 600;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(100px);
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
         }
+
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            color: #856404;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .damage-limit {
             margin-top: 5px;
             font-size: 0.8em;
@@ -404,34 +454,59 @@
             font-weight: bold;
         }
 
+        /* Modified input-group-reel-name for save button and sizing */
         .input-group-reel-name {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            gap: 10px; /* Gap between label and input/button wrapper */
         }
         
         .input-group-reel-name label {
             font-weight: 600;
             color: #555;
-            flex-basis: 35%;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         
-        .input-group-reel-name .input-wrapper {
+        .input-field-and-button-wrapper { /* New wrapper for input and button */
             display: flex;
             align-items: center;
             flex-grow: 1;
-            justify-content: flex-end;
+            /* Removed gap as button is removed */
+            width: 250px; /* Equivalent width to saved-reels + delete-btn */
+            max-width: 250px;
         }
-        
-        .input-group-reel-name input {
-            width: 100%;
+
+        .input-group-reel-name input#reel-name { /* Specific styling for reel-name input */
+            flex-grow: 1;
+            width: 100%; /* Now takes full width of its parent */
             padding: 8px 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 0.9em;
             box-sizing: border-box;
             text-align: left;
+            transition: border-color 0.3s ease, color 0.3s ease;
+            color: #333;
+        }
+
+        .action-btn { /* Reusing existing action-btn style */
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            width: 60px;
+            font-size: 0.9em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            flex-shrink: 0; /* Prevent button from shrinking */
+        }
+        .action-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
         }
 
         hr {
@@ -439,31 +514,6 @@
             height: 1px;
             background-color: #d0d0d0;
             margin: 20px 0;
-        }
-        
-        .gauge-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            flex: 1 1 350px;
-            max-width: 400px;
-            align-items: center;
-        }
-
-        .gauge-row {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            width: 100%;
-        }
-
-        .gauge-wrapper, .linear-gauge-wrapper, .circular-gauge-wrapper {
-            flex-grow: 1;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: auto;
-            max-width: none;
         }
         
         .leadcore-info-box {
@@ -477,10 +527,40 @@
             box-sizing: border-box;
             line-height: 1.4;
         }
-
-        .leadcore-text {
+        
+        .win-text-container {
             font-size: 0.9em;
             font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .win-text-container .status-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .win-text-main {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .safety-status {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .status-safe { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-danger { color: #dc3545; }
+
+        .damage-percentage {
+            font-size: 0.8em;
+            font-weight: normal;
         }
 
         .leadcore-value {
@@ -494,39 +574,415 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            margin-bottom: 12px;
+            margin-bottom: 15px; /* Adjusted margin */
+            position: relative;
+            padding-left: 30px;
+            flex-wrap: nowrap; /* Ensure elements stay on one line unless explicitly wrapped */
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: 1px solid #ccc;
+            color: #6c757d;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            line-height: 1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
         }
 
-        .combined-input-group label {
-            width: 30%;
+        .toggle-btn:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        .combined-input-group > label {
+            flex-basis: 90px; /* Reduced fixed width for the main label */
             font-weight: 600;
             color: #555;
             white-space: nowrap;
+            margin-left: 0;
+            flex-shrink: 0;
+            text-align: left;
         }
         
         .combined-input-group .input-wrapper {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 10px;
-            width: 70%;
+            gap: 5px; /* Reduced gap */
+            flex-grow: 1;
+            flex-wrap: nowrap; /* Critical: Keep sub-elements on one line */
+            min-width: 320px; /* Adjusted min-width for its content */
         }
 
         .combined-input-group .input-wrapper .input-field {
             display: flex;
             align-items: center;
+            flex-shrink: 0;
         }
-        
-        .combined-input-group .input-wrapper input {
-            width: 80px;
-            padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 0.9em;
-            box-sizing: border-box;
+
+        .combined-input-group .input-wrapper .input-field label {
+            width: auto;
+            padding-left: 5px;
+            white-space: nowrap;
+            font-size: 0.85em;
+            min-width: 40px; /* Adjusted minimum width for '손상도' label */
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .combined-input-group .input-wrapper input[type="number"] {
+            width: 60px; /* Increased max load input */
+            padding: 6px 5px; /* Reduced padding */
+            font-size: 0.85em;
             text-align: right;
         }
+        .combined-input-group .input-wrapper input.wear-input {
+            width: 50px; /* Increased wear input */
+        }
+
+        .combined-input-group .input-wrapper .unit {
+            width: 25px; /* Increased width */
+            font-size: 0.8em;
+            flex-shrink: 0;
+            text-align: left;
+            margin-right: 5px; /* Added margin for spacing */
+        }
+
+        .wear-diff {
+            font-size: 0.8em;
+            color: #6c757d;
+            margin-left: 0px; /* No margin from unit directly */
+            white-space: nowrap;
+            flex-shrink: 0;
+            text-align: left;
+            width: 60px; /* Increased fixed width for wear diff */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .input-group-with-info-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 30%;
+            font-weight: 600;
+            color: #555;
+            white-space: nowrap;
+        }
         
+        .result-title-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1em;
+            color: #1e3a5f;
+            font-weight: 700;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+
+        .info-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background-color: #6c757d;
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+
+        .info-icon:hover {
+            background-color: #5a6268;
+        }
+
+        .hidden-gear-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .hidden-gear-button {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .hidden-gear-button:hover {
+            background-color: #5a6268;
+        }
+        
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
+        }
+        
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .popup-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .popup-close:hover,
+        .popup-close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .popup-title {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 0;
+        }
+        
+        .model-select-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .model-select-group select {
+            padding: 8px 10px;
+            font-size: 0.9em;
+            border: 2px solid #28a745;
+            border-radius: 6px;
+            transition: border-color 0.3s ease, color 0.3s ease;
+            color: #28a745;
+        }
+        .model-select-group select.mode-basic {
+            border-color: #28a745;
+            color: #28a745;
+        }
+        .model-select-group select.mode-30 {
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+        .model-select-group select.mode-experimental {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+        .model-select-group select option[value="basic"] { color: #28a745; }
+        .model-select-group select option[value="30"] { color: #ffc107; }
+        .model-select-group select option[value="experimental"] { color: #dc3545; }
+
+        /* 손상도 관리 섹션 */
+        .wear-management-section {
+            margin-top: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .wear-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap; /* Keep select and buttons on one line */
+            justify-content: flex-end;
+            width: 100%;
+            align-items: center; /* Align items for consistent height */
+        }
+        .wear-controls label { /* Label for saved-wear-data */
+            font-weight: 600;
+            color: #555;
+            white-space: nowrap;
+            margin-right: auto; /* Push select/buttons to the right */
+            flex-shrink: 0;
+        }
+
+        .wear-controls select {
+            flex-grow: 0; /* Prevent select from growing excessively */
+            width: 180px; /* Increased fixed width for the select */
+            padding: 8px 10px;
+            font-size: 0.9em;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin: 0; /* Remove horizontal margin */
+        }
+        .wear-controls button {
+            flex-grow: 0; /* Prevent buttons from growing */
+            width: 70px; /* Fixed width for small buttons */
+            padding: 8px 5px; /* Adjusted padding */
+            font-size: 0.85em; /* Slightly smaller font for buttons */
+            border-radius: 6px;
+            border: 1px solid #007bff; /* default */
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .wear-controls button:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .wear-controls .delete-wear-btn {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .wear-controls .delete-wear-btn:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+
+        .gear-input-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .gear-input-section hr {
+            margin: 15px 0;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 1040px) { /* Adjusted breakpoint for better side-by-side on larger tablets and smaller desktops */
+            .main-content {
+                flex-direction: column; /* Stack vertically on smaller screens */
+                align-items: center;
+            }
+            .main-content .container,
+            .main-content .gauge-container {
+                flex-basis: 100%;
+                max-width: 100%;
+            }
+            .combined-input-group {
+                flex-wrap: wrap; /* Allow wrapping on smaller screens */
+                padding-left: 0;
+                justify-content: flex-start; /* Align left when wrapped */
+            }
+            .toggle-btn {
+                position: static;
+                transform: none;
+                margin-right: 10px;
+            }
+            .input-group-reel-name {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+            .input-group-reel-name label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            .input-field-and-button-wrapper {
+                width: 100%;
+                max-width: none;
+            }
+            .input-group-reel-name input#reel-name {
+                width: 100%; /* Adjust width for button and gap */
+            }
+            .combined-input-group > label {
+                flex-basis: auto;
+                width: auto;
+                margin-left: 0;
+                margin-right: auto;
+            }
+            .combined-input-group .input-wrapper {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 5px;
+            }
+            .combined-input-group .input-wrapper .input-field {
+                flex-grow: 1;
+                min-width: unset; /* Reset min-width */
+            }
+            .combined-input-group .input-wrapper .input-field label {
+                min-width: auto;
+                text-align: left;
+            }
+            .wear-management-section .wear-controls {
+                flex-direction: column;
+                align-items: stretch; /* Stretch items to fill width */
+            }
+            .wear-management-section .wear-controls select,
+            .wear-management-section .wear-controls button {
+                width: 100%; /* Take full width on small screens */
+                max-width: none; /* Remove max-width restriction */
+                margin: 5px 0;
+            }
+            .combined-input-group .input-wrapper input[type="number"] {
+                width: 60px; /* Slightly wider inputs for max load when stacked */
+            }
+            .combined-input-group .input-wrapper input.wear-input {
+                width: 50px; /* Slightly wider for wear when stacked */
+            }
+            .combined-input-group .input-wrapper .unit {
+                width: 25px;
+                margin-right: 0;
+            }
+            .wear-diff {
+                width: auto; /* Allow auto width when wrapped */
+                margin-left: 5px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -544,139 +1000,278 @@
     </nav>
 <div class="main-content">
     <div class="container">
-        <h1>채비 뽀각 시뮬레이터</h1>
-
+        <div class="title-container">
+            <h1>뽀각 시뮬레이터</h1>
+            <div class="model-select-group">
+                <select id="model-select">
+                    <option value="basic">기본 모드</option>
+                    <option value="30">30% 고정값 모드</option>
+                    <option value="experimental">⚠ 실험 모드</option>
+                </select>
+                <span class="info-icon" id="model-info-icon">?</span>
+            </div>
+        </div>
+        
         <div class="select-group">
+            <label for="saved-reels">저장된 채비 불러오기</label> <!-- Added label here -->
             <select id="saved-reels">
                 <option value="">새로운 채비</option>
             </select>
             <button class="delete-btn" id="delete-btn">삭제</button>
         </div>
 
+        <!-- Modified input-group-reel-name for save button and sizing -->
         <div class="input-group-reel-name">
             <label for="reel-name">저장할 채비 명칭</label>
-            <div class="input-wrapper">
+            <div class="input-field-and-button-wrapper"> <!-- New wrapper for input and button -->
                 <input type="text" id="reel-name" placeholder="ex: 모델투 나토라 1호">
+                <!-- Removed save-reel-name-btn -->
             </div>
         </div>
         
-        <div class="combined-input-group">
-            <label for="reel-max">릴 내부하중</label>
-            <div class="input-wrapper">
-                <div class="input-field">
-                    <input type="number" id="reel-max" placeholder="0.00" step="0.01">
-                    <span class="unit">kg</span>
-                </div>
-                <div class="input-field">
-                    <label for="reel-wear" style="width: auto; padding-left: 5px;">손상도</label>
-                    <input type="number" id="reel-wear" class="wear-input" placeholder="0.0" step="0.1">
-                    <span class="unit">%</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="combined-input-group">
-            <label for="brake-max">마찰 브레이크</label>
-            <div class="input-wrapper">
-                <div class="input-field">
-                    <input type="number" id="brake-max" placeholder="0.0" step="0.1">
-                    <span class="unit">kg</span>
-                </div>
-                <div class="input-field">
-                    <label for="brake-wear" style="width: auto; padding-left: 5px;">손상도</label>
-                    <input type="number" id="brake-wear" class="wear-input" placeholder="0.0" step="0.1">
-                    <span class="unit">%</span>
+        <!-- 새로운 입력 필드 컨테이너 시작 -->
+        <div class="gear-input-section">
+            <div class="combined-input-group" data-group="blank" data-name="낚싯대">
+                <button class="toggle-btn" data-toggle="blank">+</button>
+                <label for="blank-max">낚싯대 하중</label>
+                <div class="input-wrapper">
+                    <div class="input-field">
+                        <input type="number" id="blank-max" placeholder="0.00" step="0.1">
+                        <span class="unit">kg</span>
+                    </div>
+                    <div class="input-field">
+                        <label for="blank-wear">손상도</label>
+                        <input type="number" id="blank-wear" class="wear-input" placeholder="0.0" step="0.1" data-wear-type="blank">
+                        <span class="unit">%</span>
+                        <span class="wear-diff" id="blank-wear-diff"></span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <hr>
+            <div class="combined-input-group" data-group="reel" data-name="메커니즘">
+                <button class="toggle-btn" data-toggle="reel">+</button>
+                <label for="reel-max">메커니즘 하중</label>
+                <div class="input-wrapper">
+                    <div class="input-field">
+                        <input type="number" id="reel-max" placeholder="0.00" step="0.01">
+                        <span class="unit">kg</span>
+                    </div>
+                    <div class="input-field">
+                        <label for="reel-wear">손상도</label>
+                        <input type="number" id="reel-wear" class="wear-input" placeholder="0.0" step="0.1" data-wear-type="reel">
+                        <span class="unit">%</span>
+                        <span class="wear-diff" id="reel-wear-diff"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="combined-input-group" data-group="brake" data-name="마찰 브레이크">
+                <button class="toggle-btn" data-toggle="brake">+</button>
+                <label for="brake-max">마찰브레이크 저항</label> <!-- Changed label as requested -->
+                <div class="input-wrapper">
+                    <div class="input-field">
+                        <input type="number" id="brake-max" placeholder="0.0" step="0.1">
+                        <span class="unit">kg</span>
+                    </div>
+                    <div class="input-field">
+                        <label for="brake-wear">손상도</label>
+                        <input type="number" id="brake-wear" class="wear-input" placeholder="0.0" step="0.1" data-wear-type="brake">
+                        <span class="unit">%</span>
+                        <span class="wear-diff" id="brake-wear-diff"></span>
+                    </div>
+                </div>
+            </div>
 
-        <div id="leadcore-fields">
-            <div class="combined-input-group">
-                <label for="lead-core-max">원줄/리드코어 하중</label>
+            <hr>
+            
+            <div class="combined-input-group" data-group="main-line" data-name="원줄">
+                <button class="toggle-btn" data-toggle="main-line">+</button>
+                <label for="main-line-max">원줄 하중</label>
+                <div class="input-wrapper">
+                    <div class="input-field">
+                        <input type="number" id="main-line-max" placeholder="0.0" step="0.1">
+                        <span class="unit">kg</span>
+                    </div>
+                    <div class="input-field">
+                        <label for="main-line-wear">손상도</label>
+                        <input type="number" id="main-line-wear" class="wear-input" placeholder="0.0" step="0.1" data-wear-type="main-line">
+                        <span class="unit">%</span>
+                        <span class="wear-diff" id="main-line-wear-diff"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="combined-input-group" data-group="lead-core" data-name="리드코어">
+                <button class="toggle-btn" data-toggle="lead-core">+</button>
+                <label for="lead-core-max">리드코어 하중</label>
                 <div class="input-wrapper">
                     <div class="input-field">
                         <input type="number" id="lead-core-max" placeholder="0.0" step="0.1">
                         <span class="unit">kg</span>
                     </div>
                     <div class="input-field">
-                        <label for="lead-core-wear" style="width: auto; padding-left: 5px;">손상도</label>
-                        <input type="number" id="lead-core-wear" class="wear-input" placeholder="0.0" step="0.1">
+                        <label for="lead-core-wear">손상도</label>
+                        <input type="number" id="lead-core-wear" class="wear-input" placeholder="0.0" step="0.1" data-wear-type="lead-core">
                         <span class="unit">%</span>
+                        <span class="wear-diff" id="lead-core-wear-diff"></span>
                     </div>
                 </div>
             </div>
+
+            <div class="combined-input-group" data-group="leader" data-name="목줄">
+                <button class="toggle-btn" data-toggle="leader">+</button>
+                <label for="leader-max">목줄 하중</label>
+                <div class="input-wrapper">
+                    <div class="input-field">
+                        <input type="number" id="leader-max" placeholder="0.0" step="0.1">
+                        <span class="unit">kg</span>
+                    </div>
+                    <div class="input-field">
+                        <label for="leader-wear">손상도</label>
+                        <input type="number" id="leader-wear" class="wear-input" placeholder="0.0" step="0.1" data-wear-type="leader">
+                        <span class="unit">%</span>
+                        <span class="wear-diff" id="leader-wear-diff"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="combined-input-group" data-group="hook" data-name="바늘">
+                <button class="toggle-btn" data-toggle="hook">+</button>
+                <label for="hook-max">바늘 하중</label>
+                <div class="input-wrapper">
+                    <div class="input-field">
+                        <input type="number" id="hook-max" placeholder="0.0" step="0.1">
+                        <span class="unit">kg</span>
+                    </div>
+                    <div class="input-field">
+                        <label for="hook-wear">손상도</label>
+                        <input type="number" id="hook-wear" class="wear-input" placeholder="0.0" step="0.1" data-wear-type="hook">
+                        <span class="unit">%</span>
+                        <span class="wear-diff" id="hook-wear-diff"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hidden-gear-buttons" id="hidden-gear-buttons">
+            </div>
+        </div>
+        <!-- 새로운 입력 필드 컨테이너 끝 -->
+
+        <!-- 손상도 관리 섹션 추가 (gear-input-section과 calculated-values 사이에 배치) -->
+        <div class="wear-management-section">
+            <div class="wear-controls">
+                <label for="saved-wear-data">손상도 비교하기</label> <!-- Added label here -->
+                <select id="saved-wear-data">
+                    <option value="">저장된 손상도 선택</option>
+                </select>
+                <button type="button" class="action-btn" id="save-wear-btn">저장</button>
+                <button type="button" class="action-btn delete-wear-btn" id="delete-wear-btn-wear-data">삭제</button>
+            </div>
         </div>
 
-        <div class="combined-input-group">
-            <label for="leader-max">목줄 최대 하중</label>
-            <div class="input-wrapper">
-                <div class="input-field">
-                    <input type="number" id="leader-max" placeholder="0.0" step="0.1">
-                    <span class="unit">kg</span>
-                </div>
-                <div class="input-field">
-                    <label for="leader-wear" style="width: auto; padding-left: 5px;">손상도</label>
-                    <input type="number" id="leader-wear" class="wear-input" placeholder="0.0" step="0.1">
-                    <span class="unit">%</span>
-                </div>
-            </div>
-        </div>
-        
         <div class="calculated-values" id="calculated-values">
-            <h4>현재 하중 계산 결과</h4>
+            <div class="result-title-container">
+                <span id="result-title">현재 최대하중</span>
+            </div>
             <div class="results-grid">
+                <p id="current-blank-performance"></p>
                 <p id="current-reel-performance"></p>
                 <p id="current-brake-performance"></p>
+                <p id="current-main-line-performance"></p>
                 <p id="current-lead-core-performance"></p>
                 <p id="current-leader-performance"></p>
+                <p id="current-hook-performance"></p>
             </div>
+            <hr>
         </div>
     </div>
 
-    <div class="gauge-container">
-        <div class="gauge-row">
-            <div class="linear-gauge-wrapper" id="linear-gauge-wrapper">
-                <h3>∞릴 vs. 목줄</h3>
-                <div class="linear-gauge">
-                    <div class="gauge-pointer" id="reel-pointer"></div>
-                </div>
-                <div class="gauge-text">
-                    <div class="gauge-value" id="reel-gauge-value"></div>
-                </div>
-                <p class="damage-limit" id="max-reel-wear-text"></p>
+    <div class="gauge-container" id="gauge-container">
+        <div class="linear-gauge-wrapper" id="linear-gauge-wrapper" style="display: none; opacity: 0;">
+            <h3>메커니즘 vs. 목줄</h3>
+            <div class="linear-gauge">
+                <div class="gauge-pointer" id="reel-pointer"></div>
             </div>
-            
-            <div class="gauge-wrapper circular-gauge-wrapper" id="circular-gauge-wrapper">
-                <h3>마브 vs. 목줄</h3>
-                <div class="circular-gauge-container">
-                    <svg class="circular-gauge-svg" viewBox="0 0 80 80">
-                        <circle class="circular-gauge-bg" cx="40" cy="40" r="35" />
-                        <circle class="circular-gauge-fill" id="circular-gauge-fill" cx="40" cy="40" r="35" />
-                    </svg>
-                    <div class="circular-gauge-center">
-                        <div class="circular-gauge-value" id="drag-level-display"></div>
-                    </div>
-                </div>
-                <div class="gauge-description">
-                    <span class="highlight" id="drag-status-text"></span><br>
-                    <span id="drag-sustainability-text"></span>
-                </div>
+            <div class="gauge-text">
+                <div class="gauge-value" id="reel-gauge-value"></div>
             </div>
+            <p class="damage-limit" id="max-reel-wear-text"></p>
         </div>
         
-        <div class="gauge-row">
-            <div class="gauge-wrapper" id="leadcore-gauge-wrapper">
-                <h3>원줄/리드코어 vs. 목줄</h3>
-                <div class="leadcore-info-box">
-                    <p class="leadcore-text" id="leadcore-sustainability-text"></p>
+        <div class="gauge-wrapper circular-gauge-wrapper" id="circular-gauge-wrapper" style="display: none; opacity: 0;">
+            <h3>브레이크 vs. 목줄</h3> <!-- Changed to "브레이크 vs. 목줄" -->
+            <div class="circular-gauge-container">
+                <svg class="circular-gauge-svg" viewBox="0 0 80 80">
+                    <circle class="circular-gauge-bg" cx="40" cy="40" r="35" />
+                    <circle class="circular-gauge-fill" id="circular-gauge-fill" cx="40" cy="40" r="45" />
+                </svg>
+                <div class="circular-gauge-center">
+                    <div class="circular-gauge-value" id="drag-level-display"></div>
                 </div>
+            </div>
+            <div class="gauge-description">
+                <span class="highlight" id="drag-status-text"></span><br>
+                <span id="drag-sustainability-text"></span>
+            </div>
+        </div>
+    
+        <div class="gauge-wrapper" id="main-line-gauge-wrapper" style="display: none; opacity: 0;">
+            <h3>원줄 vs. 목줄</h3>
+            <div class="leadcore-info-box">
+                <div class="win-text-container" id="main-line-sustainability-text"></div>
             </div>
         </div>
 
-        <div class="warning-box" id="warning-box">
+        <div class="gauge-wrapper" id="lead-core-gauge-wrapper" style="display: none; opacity: 0;">
+            <h3>리드코어 vs. 목줄</h3>
+            <div class="leadcore-info-box">
+                <div class="win-text-container" id="lead-core-sustainability-text"></div>
+            </div>
         </div>
+        
+        <div class="gauge-wrapper" id="main-lead-gauge-wrapper" style="display: none; opacity: 0;">
+            <h3>원줄 vs. 리드코어</h3>
+            <div class="leadcore-info-box">
+                <div class="win-text-container" id="main-lead-sustainability-text"></div>
+            </div>
+        </div>
+
+        <div class="gauge-wrapper" id="blank-other-gauge-wrapper" style="display: none; opacity: 0;">
+            <h3>낚싯대 vs. 원줄 이하</h3>
+            <div class="leadcore-info-box">
+                <div class="win-text-container" id="blank-other-sustainability-text"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="warning-container"></div>
+<div id="popup-experimental" class="popup">
+    <div class="popup-content">
+        <span class="popup-close">&times;</span>
+        <h3 class="popup-title">실험 모드</h3>
+        <p>
+            실험을 위해 만든 모드입니다.
+        </p>
+    </div>
+</div>
+<div id="popup-30" class="popup">
+    <div class="popup-content">
+        <span class="popup-close">&times;</span>
+        <h3 class="popup-title">30% 고정값 모드</h3>
+        <p>
+            낚싯대 블랭크, 릴 메커니즘, 마찰 브레이크의 경우 **최대하중의 30%는 손상도에 영향을 받지 않으며**, 나머지 70%에 대해서만 손상도에 비례하여 줄어든다는 가정 하에 계산합니다.
+            <br><br>현재하중 = (최대하중 × 0.3) + (최대하중 × 0.7 × (100 - 손상도%) / 100)
+        </p>
+    </div>
+</div>
+<div id="popup-basic" class="popup">
+    <div class="popup-content">
+        <span class="popup-close">&times;</span>
+        <h3 class="popup-title">기본 모드</h3>
+        <p>
+            모든 채비가 1% 손상도가 오를 때 1%만큼의 최대하중이 줄어들 것으로 추측하는 방식입니다.
+        </p>
     </div>
 </div>
 
@@ -685,28 +1280,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputFields = document.querySelectorAll('input');
     const numberInputs = document.querySelectorAll('input[type="number"]');
     
+    // 변수명 변경 (롤백 제외)
     const reelNameInput = document.getElementById('reel-name');
+    const blankMaxInput = document.getElementById('blank-max');
+    const blankWearInput = document.getElementById('blank-wear');
     const reelMaxInput = document.getElementById('reel-max');
     const reelWearInput = document.getElementById('reel-wear');
     const leaderMaxInput = document.getElementById('leader-max');
     const leaderWearInput = document.getElementById('leader-wear');
     const brakeMaxInput = document.getElementById('brake-max');
     const brakeWearInput = document.getElementById('brake-wear');
+    const mainLineMaxInput = document.getElementById('main-line-max');
+    const mainLineWearInput = document.getElementById('main-line-wear');
     const leadCoreMaxInput = document.getElementById('lead-core-max');
     const leadCoreWearInput = document.getElementById('lead-core-wear');
+    const hookMaxInput = document = document.getElementById('hook-max');
+    const hookWearInput = document.getElementById('hook-wear');
 
     const deleteBtn = document.getElementById('delete-btn');
     const savedReelsSelect = document.getElementById('saved-reels');
+    const modelSelect = document.getElementById('model-select');
+    const modelInfoIcon = document.getElementById('model-info-icon');
+    // Removed saveReelNameBtn reference as the button is removed.
 
     const calculatedValuesDiv = document.getElementById('calculated-values');
+    const resultTitle = document.getElementById('result-title');
+    const currentBlankPerformanceP = document.getElementById('current-blank-performance');
     const currentReelPerformanceP = document.getElementById('current-reel-performance');
     const currentBrakePerformanceP = document.getElementById('current-brake-performance');
     const currentLeaderPerformanceP = document.getElementById('current-leader-performance');
+    const currentMainLinePerformanceP = document.getElementById('current-main-line-performance');
     const currentLeadCorePerformanceP = document.getElementById('current-lead-core-performance');
+    const currentHookPerformanceP = document.getElementById('current-hook-performance');
     
     const linearGaugeWrapper = document.getElementById('linear-gauge-wrapper');
-    const circularGaugeWrapper = document.getElementById('circular-gauge-wrapper');
-    const leadcoreGaugeWrapper = document.getElementById('leadcore-gauge-wrapper');
+    const circularGaugeWrapper = document.getElementById('circular-gauge-wrapper'); 
+    const mainLineGaugeWrapper = document.getElementById('main-line-gauge-wrapper');
+    const leadCoreGaugeWrapper = document.getElementById('lead-core-gauge-wrapper');
+    const mainLeadGaugeWrapper = document.getElementById('main-lead-gauge-wrapper');
+    const blankOtherGaugeWrapper = document.getElementById('blank-other-gauge-wrapper');
+    const allGaugeWrappers = document.querySelectorAll('.gauge-wrapper, .linear-gauge-wrapper, .circular-gauge-wrapper');
+
 
     const reelPointer = document.getElementById('reel-pointer');
     const reelGaugeValue = document.getElementById('reel-gauge-value');
@@ -717,11 +1331,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const dragSustainabilityText = document.getElementById('drag-sustainability-text');
     const circularGaugeFill = document.getElementById('circular-gauge-fill');
 
-    const leadcoreSustainabilityText = document.getElementById('leadcore-sustainability-text');
+    const mainLineSustainabilityText = document.getElementById('main-line-sustainability-text');
+    const leadCoreSustainabilityText = document.getElementById('lead-core-sustainability-text');
+    const mainLeadSustainabilityText = document.getElementById('main-lead-sustainability-text');
+    const blankOtherSustainabilityText = document.getElementById('blank-other-sustainability-text');
 
-    const warningBox = document.getElementById('warning-box');
-    const hamburgerMenu = document.getElementById('hamburgerMenu'); // 햄버거 메뉴 버튼
-    const sideMenu = document.getElementById('sideMenu'); // 사이드 메뉴
+    const warningContainer = document.getElementById('warning-container');
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    const sideMenu = document.getElementById('sideMenu');
+    
+    const toggleButtons = document.querySelectorAll('.toggle-btn');
+    const inputGroups = document.querySelectorAll('.combined-input-group');
+    const hiddenGearButtonsContainer = document.getElementById('hidden-gear-buttons');
+    
+    const popupExperimental = document.getElementById('popup-experimental');
+    const popup30 = document.getElementById('popup-30');
+    const popupBasic = document.getElementById('popup-basic');
+    const customModals = document.querySelectorAll('.popup');
+
+    const saveWearBtn = document.getElementById('save-wear-btn');
+    const deleteWearDataBtn = document.getElementById('delete-wear-btn-wear-data');
+    const savedWearDataSelect = document.getElementById('saved-wear-data');
+    const wearDiffSpans = document.querySelectorAll('.wear-diff');
+
+    let currentComparisonWearData = null;
+
+    document.querySelectorAll('.popup-close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', () => {
+            closeBtn.closest('.popup').style.display = 'none';
+        });
+    });
+
+    window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('popup') && !e.target.classList.contains('custom-modal-overlay')) {
+            e.target.style.display = 'none';
+        }
+    });
+
+    window.addEventListener('keydown', (e) => {
+        const activeCustomModal = document.querySelector('.custom-modal-overlay');
+        const activeInfoPopup = document.querySelector('.popup[style*="display: block;"]');
+
+        if (activeCustomModal) {
+            e.preventDefault();
+            const confirmButton = activeCustomModal.querySelector('button');
+            if (confirmButton && (e.key === ' ' || e.key === 'Enter')) {
+                confirmButton.click();
+            }
+        } else if (activeInfoPopup) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                activeInfoPopup.style.display = 'none';
+            }
+        }
+    });
+
 
     const radius = 35;
     const circumference = 2 * Math.PI * radius;
@@ -732,7 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const allInputs = Array.from(document.querySelectorAll('.combined-input-group input, .input-group-reel-name input'));
+                const allInputs = Array.from(document.querySelectorAll('.combined-input-group:not([style*="display: none;"]) input, #reel-name'));
                 const currentIndex = allInputs.indexOf(input);
                 if (currentIndex < allInputs.length - 1) {
                     allInputs[currentIndex + 1].focus();
@@ -742,23 +1406,170 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     numberInputs.forEach(input => {
-        input.addEventListener('input', calculateAndSave);
-        input.addEventListener('change', calculateAndSave);
+        input.addEventListener('input', () => {
+            calculateAndSave(false);
+            updateWearDifferences();
+        });
+        input.addEventListener('change', () => {
+            calculateAndSave(true);
+            updateWearDifferences();
+        });
     });
 
-    reelNameInput.addEventListener('change', calculateAndSave);
+    reelNameInput.addEventListener('change', () => {
+        calculateAndSave(true);
+    });
     
+    // Removed saveReelNameBtn event listener as the button is removed.
+
+    blankMaxInput.placeholder = '0.00';
+    blankWearInput.placeholder = '0.0';
     reelMaxInput.placeholder = '0.00';
     reelWearInput.placeholder = '0.0';
     brakeMaxInput.placeholder = '0.0';
     brakeWearInput.placeholder = '0.0';
     leaderMaxInput.placeholder = '0.0';
     leaderWearInput.placeholder = '0.0';
+    mainLineMaxInput.placeholder = '0.0';
+    mainLineWearInput.placeholder = '0.0';
     leadCoreMaxInput.placeholder = '0.0';
     leadCoreWearInput.placeholder = '0.0';
+    hookMaxInput.placeholder = '0.0';
+    hookWearInput.placeholder = '0.0';
 
-    function loadReelList() {
-        savedReelsSelect.innerHTML = '<option value="">새로운 채비</option>';
+
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const group = e.target.closest('.combined-input-group');
+            const isHidden = group.style.display === 'none'; 
+            group.style.display = isHidden ? 'flex' : 'none'; 
+            e.target.textContent = isHidden ? '-' : '+'; 
+            updateHiddenGearButtons();
+            calculateAndSave(true);
+        });
+    });
+
+    modelSelect.addEventListener('change', (e) => {
+        applyModeStyles(e.target.value);
+        calculateAndSave(true);
+    });
+
+    modelInfoIcon.addEventListener('click', () => {
+        const selectedModel = modelSelect.value;
+        if (selectedModel === 'basic') {
+            popupBasic.style.display = 'block';
+        } else if (selectedModel === '30') {
+            popup30.style.display = 'block';
+        } else if (selectedModel === 'experimental') {
+            popupExperimental.style.display = 'block';
+        }
+    });
+
+    function applyModeStyles(mode) {
+        modelSelect.classList.remove('mode-basic', 'mode-30', 'mode-experimental');
+        reelNameInput.classList.remove('mode-basic', 'mode-30', 'mode-experimental');
+        
+        if (mode === 'basic') {
+            modelSelect.classList.add('mode-basic');
+        } else if (mode === '30') {
+            modelSelect.classList.add('mode-30');
+        } else if (mode === 'experimental') {
+            modelSelect.classList.add('mode-experimental');
+        }
+    }
+
+    let clickCount = 0;
+    let lastClickTime = 0;
+    const CLICK_THRESHOLD = 8;
+    const TIME_THRESHOLD = 500;
+
+    function updateModelSelectOptions() {
+        const experimentalOption = modelSelect.querySelector('option[value="experimental"]');
+        if (!experimentalOption) return;
+
+        const currentReelName = reelNameInput.value.trim();
+        let isUnlockedForCurrentReel = false;
+
+        if (currentReelName) {
+            const savedData = localStorage.getItem(`reel_${currentReelName}`);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                isUnlockedForCurrentReel = data.isExperimentalUnlocked === true;
+            }
+        } else {
+            isUnlockedForCurrentReel = false;
+        }
+
+        if (isUnlockedForCurrentReel) {
+            experimentalOption.disabled = false;
+            experimentalOption.hidden = false;
+        } else {
+            experimentalOption.disabled = true;
+            experimentalOption.hidden = true;
+            if (modelSelect.value === 'experimental') {
+                modelSelect.value = 'basic';
+                applyModeStyles('basic');
+                calculateAndSave(true);
+            }
+        }
+    }
+
+    modelSelect.addEventListener('click', (e) => {
+        if (e.target.tagName.toLowerCase() === 'select') {
+            const currentTime = Date.now();
+            if (currentTime - lastClickTime < TIME_THRESHOLD) {
+                clickCount++;
+            } else {
+                clickCount = 1;
+            }
+            lastClickTime = currentTime;
+
+            if (clickCount >= CLICK_THRESHOLD) {
+                clickCount = 0;
+                
+                const currentReelName = reelNameInput.value.trim();
+                if (currentReelName) {
+                    let savedData = localStorage.getItem(`reel_${currentReelName}`);
+                    let data = savedData ? JSON.parse(savedData) : {};
+                    
+                    data.isExperimentalUnlocked = !(data.isExperimentalUnlocked === true);
+                    localStorage.setItem(`reel_${currentReelName}`, JSON.stringify(data));
+                    
+                    showCustomModal(data.isExperimentalUnlocked ? '실험 모드가 언락되었습니다!' : '실험 모드가 락되었습니다!');
+                    updateModelSelectOptions();
+                } else {
+                    showCustomModal('새로운 채비는 실험 모드를 언락할 수 없습니다. 먼저 채비명을 입력하고 저장해주세요.');
+                }
+            }
+        }
+    });
+
+
+    function updateHiddenGearButtons() {
+        hiddenGearButtonsContainer.innerHTML = '';
+        const hiddenGroups = Array.from(inputGroups).filter(group => group.style.display === 'none');
+        
+        if (hiddenGroups.length > 0) {
+            hiddenGroups.forEach(group => {
+                const groupName = group.dataset.name;
+                const button = document.createElement('button');
+                button.classList.add('hidden-gear-button');
+                button.textContent = `${groupName} 추가`;
+                button.addEventListener('click', () => {
+                    group.style.display = 'flex';
+                    const toggleButton = group.querySelector('.toggle-btn');
+                    if (toggleButton) {
+                        toggleButton.textContent = '-';
+                    }
+                    updateHiddenGearButtons();
+                    calculateAndSave(true);
+                });
+                hiddenGearButtonsContainer.appendChild(button);
+            });
+        }
+    }
+
+    function loadReelList(lastActiveReelName = null) {
         const reelKeys = [];
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
@@ -767,36 +1578,61 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         reelKeys.sort();
-        
-        if (reelKeys.length === 0) {
-            const venga6000Data = {
-                reelMax: '69.66',
-                reelWear: '0.0',
-                brakeMax: '23.7',
-                brakeWear: '0.0',
-                leadCoreMax: '36',
-                leadCoreWear: '0.0',
-                leaderMax: '31.5',
-                leaderWear: '0.0'
-            };
-            localStorage.setItem('reel_Venga 6000', JSON.stringify(venga6000Data));
-            reelKeys.push('reel_Venga 6000');
+
+        const existingOptions = Array.from(savedReelsSelect.options).map(opt => opt.value);
+        let currentReelNameInDropdown = null;
+        if (savedReelsSelect.value !== "") {
+            currentReelNameInDropdown = savedReelsSelect.value;
+        }
+
+        for (let i = savedReelsSelect.options.length - 1; i >= 0; i--) {
+            if (savedReelsSelect.options[i].value !== "") {
+                savedReelsSelect.remove(i);
+            }
         }
 
         reelKeys.forEach(key => {
             const reelName = key.substring(5);
+            if (!existingOptions.includes(reelName)) {
+                const option = document.createElement('option');
+                option.value = reelName;
+                option.textContent = reelName;
+                savedReelsSelect.appendChild(option);
+            }
+        });
+        
+        const newOptions = [];
+        reelKeys.forEach(key => {
+            newOptions.push(key.substring(5));
+        });
+        
+        const newReelOption = savedReelsSelect.querySelector('option[value=""]');
+        savedReelsSelect.innerHTML = '';
+        if (newReelOption) {
+            savedReelsSelect.appendChild(newReelOption);
+        }
+
+        newOptions.forEach(reelName => {
             const option = document.createElement('option');
             option.value = reelName;
             option.textContent = reelName;
             savedReelsSelect.appendChild(option);
         });
+
+        if (lastActiveReelName && savedReelsSelect.querySelector(`option[value="${lastActiveReelName}"]`)) {
+            savedReelsSelect.value = lastActiveReelName;
+            loadSelectedReel(lastActiveReelName);
+        } else if (currentReelNameInDropdown && savedReelsSelect.querySelector(`option[value="${currentReelNameInDropdown}"]`)) {
+            savedReelsSelect.value = currentReelNameInDropdown;
+            loadSelectedReel(currentReelNameInDropdown);
+        } else {
+            resetToNewReelState();
+        }
+        updateModelSelectOptions(); 
     }
 
     function showResults(show) {
-        calculatedValuesDiv.style.opacity = show ? '1' : '0';
-        linearGaugeWrapper.style.opacity = show ? '1' : '0';
-        circularGaugeWrapper.style.opacity = show ? '1' : '0';
-        leadcoreGaugeWrapper.style.opacity = show ? '1' : '0';
+        calculatedValuesDiv.style.opacity = '1';
     }
 
     function getColorForValue(value, min, max) {
@@ -807,25 +1643,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (normalizedValue <= 0.5) {
             const ratio = normalizedValue / 0.5;
             red = 220;
-            green = Math.round(193 * ratio);
-            blue = Math.round(53 * ratio);
+            green = Math.round(53 + (193 - 53) * ratio);
+            blue = Math.round(69 + (7 - 69) * ratio);
         } else {
             const ratio = (normalizedValue - 0.5) / 0.5;
-            red = Math.round(220 * (1 - ratio));
-            green = 193 + Math.round((168 - 193) * ratio);
-            blue = 53 + Math.round((69 - 53) * ratio);
+            red = Math.round(220 * (1 - ratio) + 40 * ratio);
+            green = Math.round(193 * (1 - ratio) + 167 * ratio);
+            blue = Math.round(7 * (1 - ratio) + 69 * ratio);
         }
         return `rgb(${red}, ${green}, ${blue})`;
     }
     
     function truncateDecimal(number, decimalPlaces) {
-        if (isNaN(number)) return '0';
+        if (isNaN(number) || number === null) return '0.0';
         const factor = Math.pow(10, decimalPlaces);
         return Math.trunc(number * factor) / factor;
     }
 
-    function updateReelGauge(reelPerformance, leaderPerformance, reelMax, leaderMax, reelWear, leaderWear) {
-        const excessLoadKg = reelPerformance - leaderPerformance;
+    // Helper function to calculate performance based on model
+    function calculatePerformanceWithModel(maxValue, wear, model) {
+        if (model === '30') {
+            const remaining = 100 - wear;
+            return (maxValue * 0.3) + (maxValue * (remaining / 100) * 0.7);
+        } else if (model === 'experimental') {
+            const k = 0.2495;
+            const remainingWearRatio = (100 - wear) / 100;
+            const term1 = 0.30;
+            const term2 = 0.70 * (0.80 * Math.pow(remainingWearRatio, 0.85) + 0.20 * Math.pow(remainingWearRatio, 0.90));
+            const term3 = 1 + k * remainingWearRatio * (1 - remainingWearRatio);
+            return maxValue * (term1 + term2) * term3;
+        } else { // basic
+            return maxValue * ((100 - wear) / 100);
+        }
+    }
+
+    function updateReelGauge(reelPerformance, otherPerformance, reelMax, otherMax, reelWear, otherWear, otherName, model) {
+        const excessLoadKg = reelPerformance - otherPerformance;
         const minVal = -5;
         const maxVal = 20;
         
@@ -836,70 +1689,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateLinearGauge(reelPointer, normalizedValue);
         
-        reelGaugeValue.innerHTML = `내부하중: ${truncateDecimal(reelPerformance, 2)}kg<br>목줄: ${truncateDecimal(leaderPerformance, 2)}kg<br><span id="excess-load-wrapper" style="color:${color};">여유하중: ${truncateDecimal(excessLoadKg, 2)}kg</span>`;
+        document.querySelector('#linear-gauge-wrapper h3').textContent = `메커니즘 vs. ${otherName}`;
+        reelGaugeValue.innerHTML = `메커니즘: ${truncateDecimal(reelPerformance, 2)}kg<br>${otherName}: ${truncateDecimal(otherPerformance, 2)}kg<br><span id="excess-load-wrapper" style="color:${color};">여유하중: ${truncateDecimal(excessLoadKg, 2)}kg</span>`;
 
         let maxReelWear = 0;
-        if (leaderMax > 0 && reelMax > 0) {
-            const numerator = leaderMax * ((100 - leaderWear) / 100);
-            maxReelWear = 100 - (numerator / reelMax * 100);
-        } else if (leaderMax === 0) {
+        let remainingWear = 0;
+
+        if (otherPerformance > 0 && reelMax > 0) {
+            // Use the helper function and reverse calculation to find max wear for reel
+            const requiredPerformanceRatio = otherPerformance / reelMax;
+            if (requiredPerformanceRatio >= 1.0) { // Reel is already weaker than needed even at 0% wear
+                maxReelWear = 0;
+            } else {
+                for (let wear = 0; wear <= 100; wear += 0.001) {
+                    const calculatedPerformance = calculatePerformanceWithModel(reelMax, wear, model);
+                    if (calculatedPerformance <= otherPerformance) {
+                        maxReelWear = wear;
+                        break;
+                    }
+                }
+            }
+            remainingWear = maxReelWear - reelWear;
+        } else if (otherPerformance === 0) {
             maxReelWear = 100;
+            remainingWear = 100 - reelWear;
         }
 
-        const remainingWear = maxReelWear - reelWear;
-        
         const truncatedRemainingWear = truncateDecimal(remainingWear, 1);
         const truncatedMaxReelWear = truncateDecimal(maxReelWear, 1);
 
         if (truncatedRemainingWear < 0) {
-            maxReelWearText.innerHTML = `릴 메커니즘 파손 위험`;
+            maxReelWearText.innerHTML = `메커니즘 파손 위험`;
             maxReelWearText.style.color = '#dc3545';
         } else {
-            maxReelWearText.innerHTML = `손상도 여유: ${truncatedRemainingWear}%<br>릴뽀각 시점: ${truncatedMaxReelWear}%`;
+            maxReelWearText.innerHTML = `손상도 여유: ${truncatedRemainingWear}%<br>뽀각 시점: ${truncatedMaxReelWear}%`;
             maxReelWearText.style.color = '#444';
         }
     }
 
-    function updateLeadcoreGauge(leadcorePerformance, leaderPerformance, leadCoreMax, leaderMax, leadCoreWear, leaderWear) {
-        let text = '';
-        let color = '';
-
-        if (leaderMax === 0 || leadCoreMax === 0) {
-            text = '원줄/리드코어 정보를 입력해주세요.';
-            color = '#888';
-        } else {
-            const leaderStrength = leaderMax * ((100 - leaderWear) / 100);
-            const leadcoreStrength = leadCoreMax * ((100 - leadCoreWear) / 100);
-            
-            if (leadcoreStrength > leaderStrength) {
-                const maxUsableLeadcoreWear = 100 - (leaderStrength / leadCoreMax * 100);
-                const remainingWear = maxUsableLeadcoreWear - leadCoreWear;
-                
-                // --- 수정된 부분: 물결표(~) 삭제 ---
-                text = `${truncateDecimal(maxUsableLeadcoreWear, 1)}% 손상도까지 목줄보다 강합니다.`;
-                color = '#007bff';
-            } else {
-                text = `⚠️ 목줄보다 약합니다.`;
-                color = '#dc3545';
-            }
-        }
+    function updateCircularGauge(brakePerformance, otherPerformance, otherMax, otherWear, otherName, model, brakeMax, brakeWear) {
+        document.querySelector('#circular-gauge-wrapper h3').textContent = `브레이크 vs. ${otherName}`; // Changed to "브레이크 vs. ${otherName}"
         
-        leadcoreSustainabilityText.innerHTML = text;
-        leadcoreSustainabilityText.style.color = color;
-    }
-    
-    function updateLinearGauge(pointer, normalizedValue) {
-        const position = normalizedValue;
-        const clampedPosition = Math.max(0, Math.min(100, position));
-        pointer.style.left = `${clampedPosition}%`;
-    }
-
-    function updateCircularGauge(brakePerformance, leaderMax, leaderWear) {
         const maxDragSteps = 29;
         const dragPerStep = brakePerformance / maxDragSteps;
-        const currentLeaderPerformance = leaderMax * ((100 - leaderWear) / 100);
+        const currentOtherPerformance = otherMax * ((100 - otherWear) / 100);
 
-        const maxUsableDragSteps = Math.floor(currentLeaderPerformance / dragPerStep);
+        const maxUsableDragSteps = Math.floor(currentOtherPerformance / dragPerStep);
         const displayDragSteps = Math.min(maxUsableDragSteps, maxDragSteps);
         
         const progress = (displayDragSteps / 30) * 0.966;
@@ -916,173 +1751,910 @@ document.addEventListener('DOMContentLoaded', () => {
             circularGaugeFill.style.stroke = '#fff';
         }
         
-        const requiredLeaderPerformance = displayDragSteps * dragPerStep;
-        const requiredLeaderWear = 100 - (requiredLeaderPerformance / leaderMax * 100);
-        const maxUsableWear = parseFloat(requiredLeaderWear.toFixed(2));
-        
-        if (requiredLeaderPerformance <= currentLeaderPerformance) {
-            dragSustainabilityText.textContent = `(목줄 손상도 ${truncateDecimal(maxUsableWear, 1)}%까지)`;
-            dragSustainabilityText.classList.remove('danger');
+        const requiredOtherPerformance = displayDragSteps * dragPerStep;
+
+        // Calculate maxUsableWear for the otherName (line)
+        let maxUsableWear_other = 0;
+        if (otherMax > 0) {
+            maxUsableWear_other = 100 - (requiredOtherPerformance / otherMax * 100);
         } else {
-            dragSustainabilityText.textContent = `(목줄 내구도 부족으로 사용 불가)`;
+            maxUsableWear_other = 0;
+        }
+        
+        // Calculate maxUsableWear for the brake using the model logic
+        let maxUsableWear_brake = 0;
+        if (brakeMax > 0) {
+            const requiredPerformanceRatio = requiredOtherPerformance / brakeMax;
+            if (requiredPerformanceRatio >= 1.0) { // Brake is already weaker than needed even at 0% wear
+                maxUsableWear_brake = 0;
+            } else {
+                for (let wear = 0; wear <= 100; wear += 0.001) {
+                    const calculatedPerformance = calculatePerformanceWithModel(brakeMax, wear, model);
+                    if (calculatedPerformance <= requiredOtherPerformance) {
+                        maxUsableWear_brake = wear;
+                        break;
+                    }
+                }
+            }
+        } else {
+            maxUsableWear_brake = 0;
+        }
+        
+        // Determine the overall weakest component and its wear limit
+        const overallMaxUsableWear = Math.min(maxUsableWear_other, maxUsableWear_brake);
+        const weakestComponent = (maxUsableWear_other < maxUsableWear_brake) ? otherName : "마찰 브레이크";
+
+        if (requiredOtherPerformance > brakePerformance || requiredOtherPerformance > currentOtherPerformance) {
+            dragSustainabilityText.textContent = `(${weakestComponent} 내구도 부족으로 사용 불가)`;
             dragSustainabilityText.classList.add('danger');
+        } else {
+            dragSustainabilityText.textContent = `(${weakestComponent} 손상도 ${truncateDecimal(overallMaxUsableWear, 1)}%까지)`;
+            dragSustainabilityText.classList.remove('danger');
         }
     }
 
-    function updateWarnings(currentReelPerformance, currentBrakePerformance, currentLeaderPerformance) {
+    function updateLineGauge(elementId, linePerformance, otherPerformance, lineTitle, otherName, lineMax) {
+        let textHTML = '';
+        let statusClass = '';
+        
+        if (linePerformance === 0 && otherPerformance === 0) {
+            textHTML = '<p>라인 정보를 입력해주세요.</p>';
+            statusClass = 'status-warning';
+        } else if (linePerformance > 0 && otherPerformance > 0) {
+            if (linePerformance > otherPerformance) { // lineTitle (e.g., 원줄) is stronger than otherName (목줄)
+                // Desired safe scenario: otherName (목줄) breaks first.
+                const maxUsableWear = 100 - (otherPerformance / lineMax * 100);
+                textHTML = `<div class="status-line"><span class="safety-status status-safe">${otherName}${getJosa(otherName)} ${lineTitle}보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(${lineTitle} <span style="font-size: 1.1em; font-weight: bold;">${truncateDecimal(maxUsableWear, 1)}%</span> 손상도까지)</span>`;
+                statusClass = 'status-safe';
+            } else { // lineTitle (e.g., 원줄) is weaker than or equal to otherName (목줄)
+                // Dangerous scenario: lineTitle (원줄) breaks first.
+                textHTML = `<div class="status-line"><span class="safety-status status-danger">위험</span></div><span class="damage-percentage" style="font-size: 0.75em;">(${lineTitle}${getJosa(lineTitle)} ${otherName}보다 약합니다)</span>`; /* Removed bold from otherName */
+                statusClass = 'status-danger';
+            }
+        } else if (linePerformance > 0) {
+            textHTML = '<p>상대 채비 정보가 없습니다.</p>';
+            statusClass = 'status-warning';
+        } else {
+            textHTML = '<p>라인 정보가 없습니다.</p>';
+            statusClass = 'status-warning';
+        }
+        
+        document.getElementById(elementId).innerHTML = textHTML;
+        document.getElementById(elementId).className = `win-text-container ${statusClass}`;
+    }
+    
+    function updateLinearGauge(pointer, normalizedValue) {
+        const position = normalizedValue;
+        const clampedPosition = Math.max(0, Math.min(100, position));
+        pointer.style.left = `${clampedPosition}%`;
+    }
+
+    function updateWarnings(currentBlankPerformance, currentReelPerformance, currentBrakePerformance, comparisonLine, comparisonLineMax, comparisonLineWear, comparisonLineName, isHookSetting) {
+        warningContainer.innerHTML = '';
         let warnings = [];
         
+        if (isHookSetting) {
+            const warningBox = document.createElement('div');
+            warningBox.classList.add('single-warning-box');
+            warningBox.innerHTML = `⚠ <span style="color:#dc3545; font-weight: bold;">바늘을 가장 약하게 세팅했습니다. 루어 또는 바늘 교체에 유의하세요.</span><button class="close-btn">&times;</button>`;
+            warningContainer.appendChild(warningBox);
+            warningBox.querySelector('.close-btn').addEventListener('click', () => {
+                warningBox.style.transform = 'translateY(100px)';
+                warningBox.style.opacity = '0';
+                setTimeout(() => warningBox.remove(), 300);
+            });
+        }
+        
         if (currentBrakePerformance > currentReelPerformance) {
-            warnings.push("마찰 브레이크 하중이 릴 내부하중보다 높습니다.");
+            warnings.push("마찰 브레이크 하중이 메커니즘 내부하중보다 높습니다."); /* Reverted warning text */
         }
         
-        if (currentLeaderPerformance > currentReelPerformance) {
-            warnings.push("목줄 하중이 릴 내부하중보다 높습니다.");
+        if (comparisonLine > currentReelPerformance) {
+            warnings.push(`${comparisonLineName} 하중이 메커니즘 내부하중보다 높습니다.`);
         }
         
+        if (comparisonLine > currentBlankPerformance) {
+             warnings.push(`${comparisonLineName} 하중이 낚싯대(블랭크) 하중보다 높습니다.`);
+        }
+
         const reelMax = parseFloat(reelMaxInput.value);
-        const leaderMax = parseFloat(leaderMaxInput.value);
-        const currentLeaderWear = parseFloat(leaderWearInput.value);
         
-        if (leaderMax * ((100 - currentLeaderWear) / 100) < reelMax) {
-            if (leaderMax * (100 / 100) > reelMax) {
-                warnings.push("목줄이 낡아서 다행입니다. 지금 목줄을 신품으로 교체한다면 메커니즘이 목줄보다 약해집니다.");
+        if (comparisonLineMax * ((100 - comparisonLineWear) / 100) < reelMax) {
+            if (comparisonLineMax * (100 / 100) > reelMax) {
+                warnings.push(`${comparisonLineName}이 낡아서 다행입니다. 지금 ${comparisonLineName}을(를) 신품으로 교체한다면 메커니즘이 ${comparisonLineName}보다 약해집니다.`);
             }
         }
-
-        if (warnings.length > 0) {
-            warningBox.innerHTML = warnings.map(msg => `⚠ ${msg}`).join('<br>');
-            warningBox.style.display = 'block';
-        } else {
-            warningBox.style.display = 'none';
-        }
+        
+        warnings.forEach(msg => {
+            const warningBox = document.createElement('div');
+            warningBox.classList.add('single-warning-box');
+            warningBox.innerHTML = `⚠ ${msg}<button class="close-btn">&times;</button>`;
+            warningContainer.appendChild(warningBox);
+            
+            warningBox.querySelector('.close-btn').addEventListener('click', () => {
+                warningBox.style.transform = 'translateY(100px)';
+                warningBox.style.opacity = '0';
+                setTimeout(() => warningBox.remove(), 300);
+            });
+        });
     }
 
-    function calculateAndSave() {
-        const inputs = [reelMaxInput, reelWearInput, brakeMaxInput, brakeWearInput, leaderMaxInput, leaderWearInput, leadCoreMaxInput, leadCoreWearInput];
+    function getWeakestLink(performances) {
+        let weakest = { name: '입력없음', value: Infinity };
+        const activePerformances = Object.entries(performances).filter(([name, value]) => value > 0);
+
+        if (activePerformances.length === 0) {
+            return { name: '입력없음', value: 0 };
+        }
+
+        for (const [name, value] of activePerformances) {
+            if (value < weakest.value) {
+                weakest = { name, value };
+            }
+        }
+        return weakest;
+    }
+
+    function setGaugeVisibility(wrapper, isVisible) {
+        if (isVisible) {
+            wrapper.style.display = 'flex';
+            setTimeout(() => {
+                wrapper.style.opacity = '1';
+            }, 10);
+        } else {
+            wrapper.style.opacity = '0';
+            setTimeout(() => {
+                wrapper.style.display = 'none';
+            }, 500);
+        }
+    }
+    
+    function getJosa(name) {
+        const lastChar = name.charCodeAt(name.length - 1);
+        const isConsonant = (lastChar - 0xac00) % 28 !== 0;
+        return isConsonant ? '이' : '가';
+    }
+
+    function calculateAndSave(shouldSave = true) {
+        const inputs = document.querySelectorAll('.combined-input-group input[type="number"]');
+        const visibleGroups = {};
+        
         inputs.forEach(input => {
             if (input.value === '') {
                 input.value = '0';
             }
+            const group = input.closest('.combined-input-group');
+            if (group) {
+                const groupName = group.dataset.group;
+                visibleGroups[groupName] = group.style.display;
+            }
         });
-
+        
         const reelName = reelNameInput.value.trim();
+        const model = modelSelect.value;
+        const blankMax = parseFloat(blankMaxInput.value);
+        const blankWear = parseFloat(blankWearInput.value);
         const reelMax = parseFloat(reelMaxInput.value);
         const reelWear = parseFloat(reelWearInput.value);
         const leaderMax = parseFloat(leaderMaxInput.value);
         const leaderWear = parseFloat(leaderWearInput.value);
         const brakeMax = parseFloat(brakeMaxInput.value);
         const brakeWear = parseFloat(brakeWearInput.value);
+        const mainLineMax = parseFloat(mainLineMaxInput.value);
+        const mainLineWear = parseFloat(mainLineWearInput.value);
         const leadCoreMax = parseFloat(leadCoreMaxInput.value);
         const leadCoreWear = parseFloat(leadCoreWearInput.value);
+        const hookMax = parseFloat(hookMaxInput.value);
+        const hookWear = parseFloat(hookWearInput.value);
 
-        if (!reelName || isNaN(reelMax) || isNaN(reelWear) || isNaN(leaderMax) || isNaN(leaderWear) || isNaN(brakeMax) || isNaN(brakeWear)) {
-            showResults(false);
+        let currentBlankPerformance = 0;
+        let currentReelPerformance = 0;
+        let currentBrakePerformance = 0;
+
+        if (visibleGroups['blank'] === 'flex') {
+            currentBlankPerformance = calculatePerformanceWithModel(blankMax, blankWear, model);
+        }
+
+        if (visibleGroups['reel'] === 'flex') {
+            currentReelPerformance = calculatePerformanceWithModel(reelMax, reelWear, model);
+        }
+
+        if (visibleGroups['brake'] === 'flex') {
+            currentBrakePerformance = calculatePerformanceWithModel(brakeMax, brakeWear, model);
+        }
+        
+        const currentMainLinePerformance = (visibleGroups['main-line'] === 'flex') ? mainLineMax * ((100 - mainLineWear) / 100) : 0;
+        const currentLeadCorePerformance = (visibleGroups['lead-core'] === 'flex') ? leadCoreMax * ((100 - leadCoreWear) / 100) : 0;
+        const currentLeaderPerformance = (visibleGroups['leader'] === 'flex') ? leaderMax * ((100 - leaderWear) / 100) : 0;
+        const currentHookPerformance = (visibleGroups['hook'] === 'flex') ? hookMax * ((100 - hookWear) / 100) : 0;
+
+        const performances = {};
+        if (visibleGroups['blank'] === 'flex') performances['낚싯대'] = currentBlankPerformance;
+        if (visibleGroups['reel'] === 'flex') performances['메커니즘'] = currentReelPerformance;
+        if (visibleGroups['brake'] === 'flex') performances['마찰 브레이크'] = currentBrakePerformance;
+        if (visibleGroups['main-line'] === 'flex') performances['원줄'] = currentMainLinePerformance;
+        if (visibleGroups['lead-core'] === 'flex') performances['리드코어'] = currentLeadCorePerformance;
+        if (visibleGroups['leader'] === 'flex') performances['목줄'] = currentLeaderPerformance;
+        if (visibleGroups['hook'] === 'flex') performances['바늘'] = currentHookPerformance;
+
+        const weakestLink = getWeakestLink(performances);
+
+        resultTitle.textContent = `현재 최대하중`;
+
+        if (!reelName || Object.keys(performances).length === 0) {
+            currentBlankPerformanceP.textContent = '';
+            currentReelPerformanceP.textContent = '';
+            currentBrakePerformanceP.textContent = '';
+            currentMainLinePerformanceP.textContent = '';
+            currentLeadCorePerformanceP.textContent = '';
+            currentLeaderPerformanceP.textContent = '';
+            currentHookPerformanceP.textContent = '';
+
+            allGaugeWrappers.forEach(wrapper => {
+                wrapper.style.opacity = '0';
+                setTimeout(() => {
+                    wrapper.style.display = 'none';
+                }, 500);
+            });
+            warningContainer.innerHTML = '';
+            updateHiddenGearButtons();
             return;
         }
-        if (reelWear < 0 || reelWear > 100 || leaderWear < 0 || leaderWear > 100 || brakeWear < 0 || brakeWear > 100) {
-            showResults(false);
-            return;
-        }
 
-        const currentReelPerformance = reelMax * ((100 - reelWear) / 100);
-        const currentBrakePerformance = brakeMax * ((100 - brakeWear) / 100);
-        const currentLeaderPerformance = leaderMax * ((100 - leaderWear) / 100);
-        const currentLeadCorePerformance = leadCoreMax * ((100 - leadCoreWear) / 100);
+        if (shouldSave) {
+            const reelData = {
+                blankMax: blankMaxInput.value,
+                blankWear: blankWearInput.value,
+                reelMax: reelMaxInput.value,
+                reelWear: reelWearInput.value,
+                brakeMax: brakeMaxInput.value,
+                brakeWear: brakeWearInput.value,
+                mainLineMax: mainLineMaxInput.value,
+                mainLineWear: mainLineWearInput.value,
+                leadCoreMax: leadCoreMaxInput.value,
+                leadCoreWear: leadCoreWearInput.value,
+                leaderMax: leaderMaxInput.value,
+                leaderWear: leaderWearInput.value, 
+                hookMax: hookMaxInput.value,
+                hookWear: hookWearInput.value,
+                model: model,
+                visibility: visibleGroups,
+                lastSelectedWearKey: savedWearDataSelect.value || null,
+                isExperimentalUnlocked: (() => {
+                    const currentReelName = reelNameInput.value.trim();
+                    if (currentReelName) {
+                        const savedData = localStorage.getItem(`reel_${currentReelName}`);
+                        if (savedData) {
+                            const data = JSON.parse(savedData);
+                            return data.isExperimentalUnlocked === true;
+                        }
+                    }
+                    return false;
+                })()
+            };
+            localStorage.setItem(`reel_${reelName}`, JSON.stringify(reelData));
+            localStorage.setItem('last_active_reel', reelName);
+            
+            if (!savedReelsSelect.querySelector(`option[value="${reelName}"]`)) {
+                 const newOption = document.createElement('option');
+                 newOption.value = reelName;
+                 newOption.textContent = reelName;
+                 savedReelsSelect.appendChild(newOption);
+                 const options = Array.from(savedReelsSelect.options).filter(option => option.value !== "");
+                 options.sort((a, b) => a.text.localeCompare(b.text));
+                 savedReelsSelect.innerHTML = '<option value="">새로운 채비</option>';
+                 options.forEach(option => savedReelsSelect.appendChild(option));
+            }
+            savedReelsSelect.value = reelName;
+            updateSavedWearDataDropdown(reelName, reelData.lastSelectedWearKey);
+        }
         
-        const reelData = {
-            reelMax: reelMaxInput.value,
-            reelWear: reelWearInput.value,
-            brakeMax: brakeMaxInput.value,
-            brakeWear: brakeWearInput.value,
-            leadCoreMax: leadCoreMaxInput.value,
-            leadCoreWear: leadCoreWearInput.value,
-            leaderMax: leaderMaxInput.value,
-            leaderWear: leaderWearInput.value,
-        };
-        localStorage.setItem(`reel_${reelName}`, JSON.stringify(reelData));
+        currentBlankPerformanceP.style.display = (visibleGroups['blank'] === 'flex') ? 'block' : 'none';
+        currentBlankPerformanceP.textContent = `낚싯대: ${truncateDecimal(currentBlankPerformance, 2)} kg`;
         
-        currentReelPerformanceP.textContent = `내부하중: ${truncateDecimal(currentReelPerformance, 2)} kg`;
+        currentReelPerformanceP.style.display = (visibleGroups['reel'] === 'flex') ? 'block' : 'none';
+        currentReelPerformanceP.textContent = `메커니즘: ${truncateDecimal(currentReelPerformance, 2)} kg`;
+        
+        currentBrakePerformanceP.style.display = (visibleGroups['brake'] === 'flex') ? 'block' : 'none';
         currentBrakePerformanceP.textContent = `마찰브레이크: ${truncateDecimal(currentBrakePerformance, 2)} kg`;
-        currentLeadCorePerformanceP.textContent = `원줄/리드코어: ${truncateDecimal(currentLeadCorePerformance, 2)} kg`;
+        
+        currentMainLinePerformanceP.style.display = (visibleGroups['main-line'] === 'flex') ? 'block' : 'none';
+        currentMainLinePerformanceP.textContent = `원줄: ${truncateDecimal(currentMainLinePerformance, 2)} kg`;
+        
+        currentLeadCorePerformanceP.style.display = (visibleGroups['lead-core'] === 'flex') ? 'block' : 'none';
+        currentLeadCorePerformanceP.textContent = `리드코어: ${truncateDecimal(currentLeadCorePerformance, 2)} kg`;
+        
+        currentLeaderPerformanceP.style.display = (visibleGroups['leader'] === 'flex') ? 'block' : 'none';
         currentLeaderPerformanceP.textContent = `목줄: ${truncateDecimal(currentLeaderPerformance, 2)} kg`;
+        
+        currentHookPerformanceP.style.display = (visibleGroups['hook'] === 'flex') ? 'block' : 'none';
+        currentHookPerformanceP.textContent = `바늘: ${truncateDecimal(currentHookPerformance, 2)} kg`;
 
-        updateReelGauge(currentReelPerformance, currentLeaderPerformance, reelMax, leaderMax, reelWear, leaderWear);
-        updateCircularGauge(currentBrakePerformance, leaderMax, leaderWear);
-        updateLeadcoreGauge(currentLeadCorePerformance, currentLeaderPerformance, leadCoreMax, leaderMax, leadCoreWear, leaderWear);
-        updateWarnings(currentReelPerformance, currentBrakePerformance, currentLeaderPerformance);
+        let comparisonLinePerformance = 0;
+        let comparisonLineMax = 0;
+        let comparisonLineWear = 0;
+        let comparisonLineName = '';
+        let isHookSetting = false;
+
+        const allLinePerformances = {};
+        if (visibleGroups['main-line'] === 'flex' && mainLineMax > 0) allLinePerformances['원줄'] = currentMainLinePerformance;
+        if (visibleGroups['lead-core'] === 'flex' && leadCoreMax > 0) allLinePerformances['리드코어'] = currentLeadCorePerformance;
+        if (visibleGroups['leader'] === 'flex' && leaderMax > 0) allLinePerformances['목줄'] = currentLeaderPerformance;
+        if (visibleGroups['hook'] === 'flex' && hookMax > 0) allLinePerformances['바늘'] = currentHookPerformance;
+
+        const weakestLine = getWeakestLink(allLinePerformances);
+
+        if (weakestLine.value !== 0 && weakestLine.value !== Infinity) {
+            comparisonLinePerformance = weakestLine.value;
+            comparisonLineName = weakestLine.name;
+
+            if (weakestLine.name === '원줄') {
+                comparisonLineMax = mainLineMax;
+                comparisonLineWear = mainLineWear;
+                isHookSetting = false;
+            } else if (weakestLine.name === '리드코어') {
+                comparisonLineMax = leadCoreMax;
+                comparisonLineWear = leadCoreWear;
+                isHookSetting = false;
+            } else if (weakestLine.name === '목줄') {
+                comparisonLineMax = leaderMax;
+                comparisonLineWear = leaderWear;
+                isHookSetting = false;
+            } else if (weakestLine.name === '바늘') {
+                comparisonLineMax = hookMax;
+                comparisonLineWear = hookWear;
+                isHookSetting = true;
+            }
+        }
+        
+        const isComparisonLineAvailable = (comparisonLinePerformance > 0);
+
+
+        setGaugeVisibility(linearGaugeWrapper, visibleGroups['reel'] === 'flex' && isComparisonLineAvailable);
+        if (visibleGroups['reel'] === 'flex' && isComparisonLineAvailable) {
+            updateReelGauge(currentReelPerformance, comparisonLinePerformance, reelMax, comparisonLineMax, reelWear, comparisonLineWear, comparisonLineName, model);
+        }
+
+        setGaugeVisibility(circularGaugeWrapper, visibleGroups['brake'] === 'flex' && isComparisonLineAvailable);
+        if (visibleGroups['brake'] === 'flex' && isComparisonLineAvailable) {
+            updateCircularGauge(currentBrakePerformance, comparisonLinePerformance, comparisonLineMax, comparisonLineWear, comparisonLineName, model, brakeMax, brakeWear);
+        }
+
+        setGaugeVisibility(mainLineGaugeWrapper, visibleGroups['main-line'] === 'flex' && visibleGroups['leader'] === 'flex');
+        if (visibleGroups['main-line'] === 'flex' && visibleGroups['leader'] === 'flex') {
+            updateLineGauge('main-line-sustainability-text', currentMainLinePerformance, currentLeaderPerformance, '원줄', '목줄', mainLineMax);
+        }
+
+        setGaugeVisibility(leadCoreGaugeWrapper, visibleGroups['lead-core'] === 'flex' && visibleGroups['leader'] === 'flex');
+        if (visibleGroups['lead-core'] === 'flex' && visibleGroups['leader'] === 'flex') {
+            updateLineGauge('lead-core-sustainability-text', currentLeadCorePerformance, currentLeaderPerformance, '리드코어', '목줄', leadCoreMax);
+        }
+
+        setGaugeVisibility(mainLeadGaugeWrapper, visibleGroups['main-line'] === 'flex' && visibleGroups['lead-core'] === 'flex');
+        if (visibleGroups['main-line'] === 'flex' && visibleGroups['lead-core'] === 'flex') {
+            let textHTML = '';
+            let statusClass = '';
+            if (currentMainLinePerformance > currentLeadCorePerformance) {
+                const maxUsableWear = 100 - (currentLeadCorePerformance / mainLineMax * 100);
+                textHTML = `<div class="status-line"><span class="safety-status status-safe">리드코어${getJosa('리드코어')} 원줄보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(원줄 <span style="font-size: 1.1em; font-weight: bold;">${truncateDecimal(maxUsableWear, 1)}%</span> 손상도까지)</span>`;
+                statusClass = 'status-safe';
+            } else if (currentMainLinePerformance < currentLeadCorePerformance) {
+                textHTML = `<div class="status-line"><span class="safety-status status-danger">위험</span></div><span class="damage-percentage" style="font-size: 0.75em;">(원줄${getJosa('원줄')} 리드코어보다 약합니다)</span>`;
+                statusClass = 'status-danger';
+            } else {
+                textHTML = `<div class="status-line"><span class="safety-status status-warning">동일</span></div><span class="damage-percentage" style="font-size: 0.75em;">(두 라인의 성능이 동일합니다)</span>`;
+                statusClass = 'status-warning';
+            }
+            mainLeadSustainabilityText.innerHTML = textHTML;
+            mainLeadSustainabilityText.className = `win-text-container ${statusClass}`;
+        }
+
+
+        setGaugeVisibility(blankOtherGaugeWrapper, visibleGroups['blank'] === 'flex' && (visibleGroups['main-line'] === 'flex' || visibleGroups['lead-core'] === 'flex' || visibleGroups['leader'] === 'flex' || visibleGroups['hook'] === 'flex'));
+        if (visibleGroups['blank'] === 'flex') {
+            const otherPerformances = {};
+            if (visibleGroups['main-line'] === 'flex') otherPerformances['원줄'] = currentMainLinePerformance;
+            if (visibleGroups['lead-core'] === 'flex') otherPerformances['리드코어'] = currentLeadCorePerformance;
+            if (visibleGroups['leader'] === 'flex') otherPerformances['목줄'] = currentLeaderPerformance;
+            if (visibleGroups['hook'] === 'flex') otherPerformances['바늘'] = currentHookPerformance;
+
+            const weakestOfLineage = getWeakestLink(otherPerformances);
+            
+            let textHTML = '';
+            let statusClass = '';
+            if (weakestOfLineage.value > 0) {
+                if (currentBlankPerformance > weakestOfLineage.value) {
+                    let protectedWear = 0;
+                    // Reverse calculate the max blank wear based on weakestOfLineage.value
+                    const requiredPerformanceRatio = weakestOfLineage.value / blankMax;
+                    if (requiredPerformanceRatio >= 1.0) {
+                        protectedWear = 0;
+                    } else {
+                        for (let wear = 0; wear <= 100; wear += 0.001) {
+                            const calculatedPerformance = calculatePerformanceWithModel(blankMax, wear, model);
+                            if (calculatedPerformance <= weakestOfLineage.value) {
+                                protectedWear = wear;
+                                break;
+                            }
+                        }
+                    }
+                    textHTML = `<div class="status-line"><span class="safety-status status-safe">${weakestOfLineage.name}${getJosa(weakestOfLineage.name)} 낚싯대보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(낚싯대 <span style="font-size: 1.1em; font-weight: bold;">${truncateDecimal(protectedWear, 1)}%</span> 손상도까지)</span>`;
+                    statusClass = 'status-safe';
+                } else {
+                    textHTML = `<div class="status-line"><span class="safety-status status-danger">위험</span></div><span class="damage-percentage" style="font-size: 0.75em;">(낚싯대보다 <span style="font-size: 1.1em; font-weight: bold;">${weakestOfLineage.name}${getJosa(weakestOfLineage.name)}</span> 강합니다)</span>`;
+                    statusClass = 'status-danger';
+                }
+            } else {
+                textHTML = `<p class="safety-status status-warning">미입력</p><p class="damage-percentage" style="font-size: 0.75em;">(낚싯대 이하 채비 정보가 없습니다)</p>`;
+                statusClass = 'status-warning';
+            }
+            blankOtherSustainabilityText.innerHTML = textHTML;
+            blankOtherSustainabilityText.className = `win-text-container ${statusClass}`;
+        }
+
+        updateWarnings(currentBlankPerformance, currentReelPerformance, currentBrakePerformance, comparisonLinePerformance, comparisonLineMax, comparisonLineWear, comparisonLineName, isHookSetting);
 
         showResults(true);
-
-        loadReelList();
-        savedReelsSelect.value = reelName;
+        updateHiddenGearButtons();
     }
-
-    savedReelsSelect.addEventListener('change', () => {
-        const selectedReelName = savedReelsSelect.value;
+    
+    function loadSelectedReel(selectedReelName) {
         if (selectedReelName) {
             const savedData = localStorage.getItem(`reel_${selectedReelName}`);
             if (savedData) {
                 const data = JSON.parse(savedData);
-                reelNameInput.value = data.reelMax ? selectedReelName : '';
-                reelMaxInput.value = data.reelMax;
-                reelWearInput.value = data.reelWear;
-                leaderMaxInput.value = data.leaderMax;
-                leaderWearInput.value = data.leaderWear;
-                brakeMaxInput.value = data.brakeMax;
-                brakeWearInput.value = data.brakeWear;
-                leadCoreMaxInput.value = data.leadCoreMax || '0';
-                leadCoreWearInput.value = data.leadCoreWear || '0';
                 
-                calculateAndSave();
+                reelNameInput.value = selectedReelName;
+                blankMaxInput.value = data.blankMax || '0.00';
+                blankWearInput.value = data.blankWear || '0.0';
+                reelMaxInput.value = data.reelMax || '0.00';
+                reelWearInput.value = data.reelWear || '0.0';
+                leaderMaxInput.value = data.leaderMax || '0.0';
+                leaderWearInput.value = data.leaderWear || '0.0';
+                brakeMaxInput.value = data.brakeMax || '0.0';
+                brakeWearInput.value = data.brakeWear || '0.0';
+                mainLineMaxInput.value = data.mainLineMax || '0.0';
+                mainLineWearInput.value = data.mainLineWear || '0.0';
+                leadCoreMaxInput.value = data.leadCoreMax || '0.0';
+                leadCoreWearInput.value = data.leadCoreWear || '0.0';
+                hookMaxInput.value = data.hookMax || '0.0';
+                hookWearInput.value = data.hookWear || '0.0';
+                
+                modelSelect.value = data.model || 'basic';
+                applyModeStyles(modelSelect.value);
+
+                data.isExperimentalUnlocked = data.isExperimentalUnlocked === true;
+                modelSelect.dataset.isExperimentalUnlocked = data.isExperimentalUnlocked;
+                updateModelSelectOptions();
+                delete modelSelect.dataset.isExperimentalUnlocked;
+
+
+                inputGroups.forEach(group => {
+                    const groupName = group.dataset.group;
+                    const visibility = (data.visibility && data.visibility[groupName]) === 'flex' ? 'flex' : 'none';
+                    group.style.display = visibility;
+                    const toggleButton = group.querySelector('.toggle-btn');
+                    if(toggleButton) {
+                        toggleButton.textContent = visibility === 'none' ? '+' : '-';
+                    }
+                });
+                
+                calculateAndSave(false);
+                if (data.lastSelectedWearKey) {
+                    updateSavedWearDataDropdown(selectedReelName, data.lastSelectedWearKey);
+                } else {
+                    updateSavedWearDataDropdown(selectedReelName);
+                }
             }
+        }
+    }
+
+    function resetToNewReelState() {
+        showResults(false);
+        reelNameInput.value = '';
+        currentBlankPerformanceP.textContent = '';
+        currentReelPerformanceP.textContent = '';
+        currentBrakePerformanceP.textContent = '';
+        currentMainLinePerformanceP.textContent = '';
+        currentLeadCorePerformanceP.textContent = '';
+        currentLeaderPerformanceP.textContent = '';
+        currentHookPerformanceP.textContent = '';
+
+        blankMaxInput.value = '0.00';
+        blankWearInput.value = '0.0';
+        reelMaxInput.value = '0.00';
+        reelWearInput.value = '0.0';
+        leaderMaxInput.value = '0.0';
+        leaderWearInput.value = '0.0';
+        brakeMaxInput.value = '0.0';
+        brakeWearInput.value = '0.0';
+        mainLineMaxInput.value = '0.0';
+        mainLineWearInput.value = '0.0';
+        leadCoreMaxInput.value = '0.0';
+        leadCoreWearInput.value = '0.0';
+        hookMaxInput.value = '0.0';
+        hookWearInput.value = '0.0';
+        warningContainer.innerHTML = '';
+        allGaugeWrappers.forEach(wrapper => {
+            wrapper.style.opacity = '0';
+            setTimeout(() => {
+                wrapper.style.display = 'none';
+            }, 500);
+        });
+
+        inputGroups.forEach(group => {
+            group.style.display = 'none'; 
+            const toggleButton = group.querySelector('.toggle-btn');
+            if(toggleButton) {
+                toggleButton.textContent = '+'; 
+            }
+        });
+
+        const reelGroup = document.querySelector('.combined-input-group[data-group="reel"]');
+        if (reelGroup) {
+            reelGroup.style.display = 'flex';
+            const toggleButton = reelGroup.querySelector('.toggle-btn');
+            if(toggleButton) {
+                toggleButton.textContent = '-';
+            }
+        }
+        const brakeGroup = document.querySelector('.combined-input-group[data-group="brake"]');
+        if (brakeGroup) {
+            brakeGroup.style.display = 'flex';
+            const toggleButton = brakeGroup.querySelector('.toggle-btn');
+            if(toggleButton) {
+                toggleButton.textContent = '-';
+            }
+        }
+        const blankGroup = document.querySelector('.combined-input-group[data-group="blank"]');
+        if (blankGroup) {
+            blankGroup.style.display = 'flex';
+            const toggleButton = blankGroup.querySelector('.toggle-btn');
+            if(toggleButton) {
+                toggleButton.textContent = '-';
+            }
+        }
+        const mainLineGroup = document.querySelector('.combined-input-group[data-group="main-line"]');
+        if (mainLineGroup) {
+            mainLineGroup.style.display = 'flex';
+            const toggleButton = mainLineGroup.querySelector('.toggle-btn');
+            if(toggleButton) {
+                toggleButton.textContent = '-';
+            }
+        }
+        // Added 'leader' group to be visible by default
+        const leaderGroup = document.querySelector('.combined-input-group[data-group="leader"]');
+        if (leaderGroup) {
+            leaderGroup.style.display = 'flex';
+            const toggleButton = leaderGroup.querySelector('.toggle-btn');
+            if(toggleButton) {
+                toggleButton.textContent = '-';
+            }
+        }
+
+        updateHiddenGearButtons();
+        modelSelect.value = 'basic';
+        applyModeStyles('basic');
+        modelSelect.dataset.isExperimentalUnlocked = false;
+        updateModelSelectOptions();
+        updateSavedWearDataDropdown('');
+        clearWearDifferences();
+    }
+
+
+    savedReelsSelect.addEventListener('change', () => {
+        const selectedReelName = savedReelsSelect.value;
+        if (selectedReelName) {
+            loadSelectedReel(selectedReelName);
+            localStorage.setItem('last_active_reel', selectedReelName); 
         } else {
-            showResults(false);
-            reelNameInput.value = '';
-            reelMaxInput.value = '';
-            reelWearInput.value = '';
-            leaderMaxInput.value = '';
-            leaderWearInput.value = '';
-            brakeMaxInput.value = '';
-            brakeWearInput.value = '';
-            leadCoreMaxInput.value = '';
-            leadCoreWearInput.value = '';
-            warningBox.style.display = 'none';
+            resetToNewReelState();
         }
     });
 
     deleteBtn.addEventListener('click', () => {
         const selectedReelName = savedReelsSelect.value;
         if (!selectedReelName) {
-            alert('삭제할 릴을 선택해주세요!');
+            showCustomModal('삭제할 릴을 선택해주세요!');
             return;
         }
 
-        if (confirm(`${selectedReelName} 릴 정보를 정말 삭제하시겠습니까?`)) {
+        showCustomConfirm(`정말 삭제하시겠습니까?`, () => {
             localStorage.removeItem(`reel_${selectedReelName}`);
-            alert(`${selectedReelName} 릴 정보가 삭제되었습니다.`);
-            loadReelList();
-            showResults(false);
-            reelNameInput.value = '';
-            reelMaxInput.value = '';
-            reelWearInput.value = '';
-            leaderMaxInput.value = '';
-            leaderWearInput.value = '';
-            brakeMaxInput.value = '';
-            brakeWearInput.value = '';
-            leadCoreMaxInput.value = '';
-            leadCoreWearInput.value = '';
-            warningBox.style.display = 'none';
-        }
+            if (localStorage.getItem('last_active_reel') === selectedReelName) {
+                localStorage.removeItem('last_active_reel');
+            }
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith(`wear_${selectedReelName}_`)) {
+                    localStorage.removeItem(key);
+                }
+            }
+
+            showCustomModal(`${selectedReelName} 릴 정보가 삭제되었습니다.`, () => {
+                loadReelList();
+                resetToNewReelState();
+            });
+        });
     });
 
-    // 햄버거 메뉴 토글
     hamburgerMenu.addEventListener('click', () => {
         hamburgerMenu.classList.toggle('open');
         sideMenu.classList.toggle('open');
     });
 
-    loadReelList();
+    saveWearBtn.addEventListener('click', () => {
+        const reelName = reelNameInput.value.trim();
+        if (!reelName) {
+            showCustomModal('채비 명칭을 먼저 입력하고 저장된 채비를 선택하거나 새로운 채비를 저장해주세요.');
+            return;
+        }
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const timestamp = `${year}${month}${day}${hours}${minutes}`;
+        const saveName = `${month}월${day}일 ${hours}시${minutes}분`;
+
+        const wearData = {};
+        document.querySelectorAll('.wear-input').forEach(input => {
+            const wearType = input.dataset.wearType;
+            if (wearType) {
+                wearData[wearType] = input.value;
+            }
+        });
+
+        const key = `wear_${reelName}_${timestamp}`;
+        localStorage.setItem(key, JSON.stringify(wearData));
+        showCustomModal(`손상도 '${saveName}'이(가) 저장되었습니다.`);
+        updateSavedWearDataDropdown(reelName, key);
+    });
+
+    savedWearDataSelect.addEventListener('change', () => {
+        const selectedWearKey = savedWearDataSelect.value;
+        if (!selectedWearKey) {
+            clearWearDifferences();
+            return;
+        }
+
+        const savedWearDataString = localStorage.getItem(selectedWearKey);
+        if (!savedWearDataString) {
+            showCustomModal('선택된 손상도 기록을 찾을 수 없습니다.');
+            return;
+        }
+        currentComparisonWearData = JSON.parse(savedWearDataString);
+
+        updateWearDifferences();
+    });
+
+
+    deleteWearDataBtn.addEventListener('click', () => {
+        const selectedWearKey = savedWearDataSelect.value;
+        if (!selectedWearKey) {
+            showCustomModal('삭제할 손상도 기록을 선택해주세요.');
+            return;
+        }
+
+        const reelName = reelNameInput.value.trim();
+        const displayName = savedWearDataSelect.options[savedWearDataSelect.selectedIndex].text;
+
+        showCustomConfirm(`정말 삭제하시겠습니까?`, () => {
+            localStorage.removeItem(selectedWearKey);
+            showCustomModal(`'${displayName}' 손상도 기록이 삭제되었습니다.`, () => {
+                updateSavedWearDataDropdown(reelName);
+                clearWearDifferences();
+            });
+        });
+    });
+
+    function updateSavedWearDataDropdown(currentReelName, selectKey = null) {
+        savedWearDataSelect.innerHTML = '<option value="">저장된 손상도 선택</option>';
+        const wearDataKeys = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith(`wear_${currentReelName}_`)) {
+                wearDataKeys.push(key);
+            }
+        }
+        wearDataKeys.sort();
+
+        wearDataKeys.forEach(key => {
+            const parts = key.split('_');
+            const timestamp = parts[parts.length - 1];
+            const month = timestamp.substring(4, 6);
+            const day = timestamp.substring(6, 8);
+            const hours = timestamp.substring(8, 10);
+            const minutes = timestamp.substring(10, 12);
+            const displayName = `${month}월${day}일 ${hours}시${minutes}분`;
+
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = displayName;
+            savedWearDataSelect.appendChild(option);
+        });
+
+        let targetSelectKey = selectKey;
+        if (targetSelectKey && !savedWearDataSelect.querySelector(`option[value="${targetSelectKey}"]`)) {
+            targetSelectKey = null;
+        }
+        
+        savedWearDataSelect.value = targetSelectKey || ""; 
+
+        if (savedWearDataSelect.value !== "") {
+            const savedWearDataString = localStorage.getItem(savedWearDataSelect.value);
+            if (savedWearDataString) {
+                currentComparisonWearData = JSON.parse(savedWearDataString);
+            } else {
+                currentComparisonWearData = null;
+            }
+        } else {
+            currentComparisonWearData = null;
+        }
+        updateWearDifferences();
+    }
+
+    function updateWearDifferences() {
+        if (!currentComparisonWearData) {
+            clearWearDifferences();
+            return;
+        }
+
+        document.querySelectorAll('.wear-input').forEach(input => {
+            const wearType = input.dataset.wearType;
+            const currentWear = parseFloat(input.value || '0');
+            const savedWear = parseFloat(currentComparisonWearData[wearType] || '0');
+
+            const diff = currentWear - savedWear;
+            const diffSpan = document.getElementById(`${wearType}-wear-diff`);
+            if (diffSpan) {
+                diffSpan.textContent = `${diff >= 0 ? '+' : ''}${truncateDecimal(diff, 1)}%`;
+                if (diff > 0) {
+                    diffSpan.style.color = '#dc3545';
+                } else if (diff < 0) {
+                    diffSpan.style.color = '#28a745';
+                } else {
+                    diffSpan.style.color = '#6c757d';
+                }
+            }
+        });
+    }
+
+    function clearWearDifferences() {
+        wearDiffSpans.forEach(span => {
+            span.textContent = '';
+            span.style.color = '#6c757d';
+        });
+        currentComparisonWearData = null;
+    }
+
+    function showCustomModal(message, callback = () => {}) {
+        const modalDiv = document.createElement('div');
+        modalDiv.classList.add('custom-modal-overlay');
+        modalDiv.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        `;
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 300px;
+            width: 80%;
+        `;
+        const p = document.createElement('p');
+        p.textContent = message;
+        const button = document.createElement('button');
+        button.textContent = '확인';
+        button.style.cssText = `
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        `;
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.body.removeChild(modalDiv);
+            callback();
+        });
+        modalContent.appendChild(p);
+        modalContent.appendChild(button);
+        modalDiv.appendChild(modalContent);
+        document.body.appendChild(modalDiv);
+
+        button.focus();
+    }
+
+    function showCustomConfirm(message, onConfirm, onCancel = () => {}) {
+        const modalDiv = document.createElement('div');
+        modalDiv.classList.add('custom-modal-overlay');
+        modalDiv.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        `;
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 300px;
+            width: 80%;
+        `;
+        const p = document.createElement('p');
+        p.textContent = message;
+        
+        const confirmButton = document.createElement('button');
+        confirmButton.textContent = '확인';
+        confirmButton.style.cssText = `
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-right: 10px;
+        `;
+        confirmButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.body.removeChild(modalDiv);
+            onConfirm();
+        });
+
+        const cancelButton = document.createElement('button');
+        cancelButton.textContent = '취소';
+        cancelButton.style.cssText = `
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        `;
+        cancelButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.body.removeChild(modalDiv);
+            onCancel();
+        });
+
+        modalContent.appendChild(p);
+        modalContent.appendChild(confirmButton);
+        modalContent.appendChild(cancelButton);
+        modalDiv.appendChild(modalContent);
+        document.body.appendChild(modalDiv);
+
+        confirmButton.focus();
+    }
+
+    const lastActiveReelName = localStorage.getItem('last_active_reel');
+    loadReelList(lastActiveReelName);
 });
 </script>
 </body>
