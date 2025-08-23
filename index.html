@@ -283,7 +283,7 @@
             width: 100%;
             height: 15px;
             background: linear-gradient(to right, #dc3545 0%, #ffc107 50%, #28a745 100%);
-            border-radius: 5_px;
+            border-radius: 5px;
             position: relative;
             margin-bottom: 10px;
         }
@@ -344,7 +344,7 @@
             stroke-width: 3;
             stroke-linecap: butt;
             transition: stroke-dasharray 0.3s ease-in-out;
-            r: 35px;
+            r: 35px; /* Changed to 35px to match background for visible border */
             cx: 40px;
             cy: 40px;
         }
@@ -454,34 +454,33 @@
             font-weight: bold;
         }
 
-        /* Modified input-group-reel-name for save button and sizing */
         .input-group-reel-name {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
-            gap: 10px; /* Gap between label and input/button wrapper */
+            gap: 10px; /* Added gap */
         }
         
         .input-group-reel-name label {
             font-weight: 600;
             color: #555;
-            flex-shrink: 0;
+            flex-shrink: 0; /* Prevent label from shrinking */
             white-space: nowrap;
         }
         
-        .input-field-and-button-wrapper { /* New wrapper for input and button */
+        .input-group-reel-name .input-wrapper {
             display: flex;
             align-items: center;
             flex-grow: 1;
-            /* Removed gap as button is removed */
-            width: 250px; /* Equivalent width to saved-reels + delete-btn */
-            max-width: 250px;
+            justify-content: flex-end;
+            width: 100%; /* Take full width of parent */
+            max-width: 250px; /* Limit max width */
         }
-
-        .input-group-reel-name input#reel-name { /* Specific styling for reel-name input */
+        
+        .input-group-reel-name input {
             flex-grow: 1;
-            width: 100%; /* Now takes full width of its parent */
+            width: 100%; /* Take full width of its parent */
             padding: 8px 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -491,23 +490,19 @@
             transition: border-color 0.3s ease, color 0.3s ease;
             color: #333;
         }
+        .input-group-reel-name input.mode-basic {
+            border-color: #ccc; 
+            color: #333;
+        }
+        .input-group-reel-name input.mode-30 {
+            border-color: #ccc;
+            color: #333;
+        }
+        .input-group-reel-name input.mode-experimental {
+            border-color: #ccc;
+            color: #333;
+        }
 
-        .action-btn { /* Reusing existing action-btn style */
-            background-color: #007bff;
-            color: white;
-            padding: 8px 12px;
-            width: 60px;
-            font-size: 0.9em;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            flex-shrink: 0; /* Prevent button from shrinking */
-        }
-        .action-btn:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
 
         hr {
             border: 0;
@@ -924,20 +919,17 @@
                 transform: none;
                 margin-right: 10px;
             }
-            .input-group-reel-name {
+            .input-group-reel-name { /* Specific adjustment for reel-name group on smaller screens */
                 flex-wrap: wrap;
                 justify-content: flex-start;
             }
             .input-group-reel-name label {
-                width: 100%;
+                width: 100%; /* Label takes full width */
                 margin-bottom: 5px;
             }
-            .input-field-and-button-wrapper {
-                width: 100%;
+            .input-group-reel-name .input-wrapper {
+                width: 100%; /* Input wrapper takes full width */
                 max-width: none;
-            }
-            .input-group-reel-name input#reel-name {
-                width: 100%; /* Adjust width for button and gap */
             }
             .combined-input-group > label {
                 flex-basis: auto;
@@ -1052,12 +1044,9 @@
             }
 
             /* Adjust input field and button wrapper to fill space better */
-            .input-field-and-button-wrapper {
+            .input-group-reel-name .input-wrapper {
                 max-width: none;
                 width: 100%;
-            }
-            .input-group-reel-name input#reel-name {
-                width: 100%; /* Take full width */
             }
         }
     </style>
@@ -1097,12 +1086,10 @@
             <button class="delete-btn" id="delete-btn">삭제</button>
         </div>
 
-        <!-- Modified input-group-reel-name for save button and sizing -->
         <div class="input-group-reel-name">
             <label for="reel-name">저장할 채비 명칭</label>
-            <div class="input-field-and-button-wrapper"> <!-- New wrapper for input and button -->
+            <div class="input-wrapper">
                 <input type="text" id="reel-name" placeholder="ex: 모델투 나토라 1호">
-                <!-- Removed save-reel-name-btn -->
             </div>
         </div>
         
@@ -1276,11 +1263,11 @@
         </div>
         
         <div class="gauge-wrapper circular-gauge-wrapper" id="circular-gauge-wrapper" style="display: none; opacity: 0;">
-            <h3>브레이크 vs. 목줄</h3> <!-- Changed to "브레이크 vs. 목줄" -->
+            <h3>브레이크 vs. 목줄</h3>
             <div class="circular-gauge-container">
                 <svg class="circular-gauge-svg" viewBox="0 0 80 80">
                     <circle class="circular-gauge-bg" cx="40" cy="40" r="35" />
-                    <circle class="circular-gauge-fill" id="circular-gauge-fill" cx="40" cy="40" r="45" />
+                    <circle class="circular-gauge-fill" id="circular-gauge-fill" cx="40" cy="40" r="35" />
                 </svg>
                 <div class="circular-gauge-center">
                     <div class="circular-gauge-value" id="drag-level-display"></div>
@@ -1337,7 +1324,8 @@
         <span class="popup-close">&times;</span>
         <h3 class="popup-title">30% 고정값 모드</h3>
         <p>
-            낚싯대 블랭크, 릴 메커니즘, 마찰 브레이크의 경우 최대하중의 30%는 손상도에 영향을 받지 않으며, 나머지 70%만 손상도에 비례하여 줄어든다는 설에 따릅니다.
+            낚싯대 블랭크와 릴 메커니즘, 마찰브레이크의 최초 성능의 30%는 손상되지 않으며, 나머지 70%만 손상도에 비례하여 성능이 줄어든다는 설에 근거한 계산법입니다. 충분히 검증되지 않았으므로 사용에 주의해주세요.
+            <br><br>현재하중 = (최대하중 × 0.3) + (최대하중 × 0.7 × (100 - 손상도%) / 100)
         </p>
     </div>
 </div>
@@ -1377,7 +1365,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedReelsSelect = document.getElementById('saved-reels');
     const modelSelect = document.getElementById('model-select');
     const modelInfoIcon = document.getElementById('model-info-icon');
-    // Removed saveReelNameBtn reference as the button is removed.
 
     const calculatedValuesDiv = document.getElementById('calculated-values');
     const resultTitle = document.getElementById('result-title');
@@ -1386,12 +1373,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentBrakePerformanceP = document.getElementById('current-brake-performance');
     const currentLeaderPerformanceP = document.getElementById('current-leader-performance');
     const currentMainLinePerformanceP = document.getElementById('current-main-line-performance');
-    const currentLeadCorePerformanceP = document.getElementById('current-lead-core-performance');
+    const currentLeadCorePerformanceP = document = document.getElementById('current-lead-core-performance');
     const currentHookPerformanceP = document.getElementById('current-hook-performance');
     
     const linearGaugeWrapper = document.getElementById('linear-gauge-wrapper');
     const circularGaugeWrapper = document.getElementById('circular-gauge-wrapper'); 
-    const mainLineGaugeWrapper = document.getElementById('main-line-gauge-wrapper');
+    const mainLineGaugeWrapper = document.getElementById('main-line-gauge-wrapper'); 
     const leadCoreGaugeWrapper = document.getElementById('lead-core-gauge-wrapper');
     const mainLeadGaugeWrapper = document.getElementById('main-lead-gauge-wrapper');
     const blankOtherGaugeWrapper = document.getElementById('blank-other-gauge-wrapper');
@@ -1472,7 +1459,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                const allInputs = Array.from(document.querySelectorAll('.combined-input-group:not([style*="display: none;"]) input, #reel-name'));
+                const allInputs = Array.from(document.querySelectorAll('.combined-input-group:not([style*="display: none;"]) input, .input-group-reel-name input'));
                 const currentIndex = allInputs.indexOf(input);
                 if (currentIndex < allInputs.length - 1) {
                     allInputs[currentIndex + 1].focus();
@@ -1496,8 +1483,6 @@ document.addEventListener('DOMContentLoaded', () => {
         calculateAndSave(true);
     });
     
-    // Removed saveReelNameBtn event listener as the button is removed.
-
     blankMaxInput.placeholder = '0.00';
     blankWearInput.placeholder = '0.0';
     reelMaxInput.placeholder = '0.00';
@@ -1730,10 +1715,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return `rgb(${red}, ${green}, ${blue})`;
     }
     
-    function truncateDecimal(number, decimalPlaces) {
+    // Updated to roundToDecimal for accurate display
+    function roundToDecimal(number, decimalPlaces) {
         if (isNaN(number) || number === null) return '0.0';
         const factor = Math.pow(10, decimalPlaces);
-        return Math.trunc(number * factor) / factor;
+        return Math.round(number * factor) / factor;
     }
 
     // Helper function to calculate performance based on model
@@ -1766,51 +1752,66 @@ document.addEventListener('DOMContentLoaded', () => {
         updateLinearGauge(reelPointer, normalizedValue);
         
         document.querySelector('#linear-gauge-wrapper h3').textContent = `메커니즘 vs. ${otherName}`;
-        reelGaugeValue.innerHTML = `메커니즘: ${truncateDecimal(reelPerformance, 2)}kg<br>${otherName}: ${truncateDecimal(otherPerformance, 2)}kg<br><span id="excess-load-wrapper" style="color:${color};">여유하중: ${truncateDecimal(excessLoadKg, 2)}kg</span>`;
+        reelGaugeValue.innerHTML = `메커니즘: ${roundToDecimal(reelPerformance, 2)}kg<br>${otherName}: ${roundToDecimal(otherPerformance, 2)}kg<br><span id="excess-load-wrapper" style="color:${color};">여유하중: ${roundToDecimal(excessLoadKg, 2)}kg</span>`;
 
         let maxReelWear = 0;
         let remainingWear = 0;
 
         if (otherPerformance > 0 && reelMax > 0) {
-            // Use the helper function and reverse calculation to find max wear for reel
-            const requiredPerformanceRatio = otherPerformance / reelMax;
-            if (requiredPerformanceRatio >= 1.0) { // Reel is already weaker than needed even at 0% wear
-                maxReelWear = 0;
-            } else {
-                for (let wear = 0; wear <= 100; wear += 0.001) {
-                    const calculatedPerformance = calculatePerformanceWithModel(reelMax, wear, model);
-                    if (calculatedPerformance <= otherPerformance) {
-                        maxReelWear = wear;
-                        break;
+            // Reverse calculate the maximum wear for the reel based on otherPerformance
+            if (model === '30') {
+                const effectivePart = reelMax * 0.7;
+                const requiredEffectivePerformance = otherPerformance - (reelMax * 0.3);
+                if (requiredEffectivePerformance <= 0) { // If otherPerformance is less than or equal to 30% of reelMax, reel can sustain 100% wear
+                    maxReelWear = 100;
+                } else {
+                    const requiredWearRatio = 1 - (requiredEffectivePerformance / effectivePart);
+                    maxReelWear = 100 * requiredWearRatio;
+                }
+            } else if (model === 'experimental') {
+                const requiredPerformanceRatio = otherPerformance / reelMax;
+                if (requiredPerformanceRatio >= 1.0) { // Reel is already weaker than needed even at 0% wear
+                    maxReelWear = 0;
+                } else {
+                    for (let wear = 0; wear <= 100; wear += 0.001) {
+                        const calculatedPerformanceRatio = calculatePerformanceWithModel(1, wear, model); // Calculate performance ratio directly
+                        if (calculatedPerformanceRatio <= requiredPerformanceRatio) {
+                            maxReelWear = wear;
+                            break;
+                        }
                     }
                 }
+            } else { // basic
+                maxReelWear = 100 - (otherPerformance / reelMax * 100);
             }
+            // Ensure maxReelWear is within 0-100%
+            maxReelWear = Math.max(0, Math.min(100, maxReelWear));
             remainingWear = maxReelWear - reelWear;
         } else if (otherPerformance === 0) {
             maxReelWear = 100;
             remainingWear = 100 - reelWear;
         }
 
-        const truncatedRemainingWear = truncateDecimal(remainingWear, 1);
-        const truncatedMaxReelWear = truncateDecimal(maxReelWear, 1);
+        const roundedRemainingWear = roundToDecimal(remainingWear, 1);
+        const roundedMaxReelWear = roundToDecimal(maxReelWear, 1);
 
-        if (truncatedRemainingWear < 0) {
+        if (parseFloat(roundedRemainingWear) < 0) { // Check the formatted value for display status
             maxReelWearText.innerHTML = `메커니즘 파손 위험`;
             maxReelWearText.style.color = '#dc3545';
         } else {
-            maxReelWearText.innerHTML = `손상도 여유: ${truncatedRemainingWear}%<br>뽀각 시점: ${truncatedMaxReelWear}%`;
+            maxReelWearText.innerHTML = `손상도 여유: ${roundedRemainingWear}%<br>뽀각 시점: ${roundedMaxReelWear}%`;
             maxReelWearText.style.color = '#444';
         }
     }
 
-    function updateCircularGauge(brakePerformance, otherPerformance, otherMax, otherWear, otherName, model, brakeMax, brakeWear) {
+    function updateCircularGauge(brakePerformance, otherPerformance, otherMax, otherWear, otherName) {
         document.querySelector('#circular-gauge-wrapper h3').textContent = `브레이크 vs. ${otherName}`;
         
         const maxDragSteps = 29;
         const dragPerStep = brakePerformance / maxDragSteps;
         const currentOtherPerformance = otherMax * ((100 - otherWear) / 100);
 
-        const maxUsableDragSteps = Math.floor(currentOtherPerformance / dragPerStep);
+        const maxUsableDragSteps = Math.floor(currentOtherPerformance / dragPerStep + 1e-6); // Added 1e-6 epsilon for floor
         const displayDragSteps = Math.min(maxUsableDragSteps, maxDragSteps);
         
         const progress = (displayDragSteps / 30) * 0.966;
@@ -1828,49 +1829,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const requiredOtherPerformance = displayDragSteps * dragPerStep;
-
-        // Calculate maxUsableWear for the otherName (line)
-        let maxUsableWear_other = 0;
-        if (otherMax > 0) {
-            maxUsableWear_other = 100 - (requiredOtherPerformance / otherMax * 100);
-        } else {
-            maxUsableWear_other = 0;
-        }
+        const requiredOtherWear = 100 - (requiredOtherPerformance / otherMax * 100);
+        const maxUsableWear = parseFloat(requiredOtherWear.toFixed(2));
         
-        // Calculate maxUsableWear for the brake using the model logic
-        let maxUsableWear_brake = 0;
-        if (brakeMax > 0) {
-            const requiredPerformanceRatio = requiredOtherPerformance / brakeMax;
-            if (requiredPerformanceRatio >= 1.0) { // Brake is already weaker than needed even at 0% wear
-                maxUsableWear_brake = 0;
-            } else {
-                for (let wear = 0; wear <= 100; wear += 0.001) {
-                    const calculatedPerformance = calculatePerformanceWithModel(brakeMax, wear, model);
-                    if (calculatedPerformance <= requiredOtherPerformance) {
-                        maxUsableWear_brake = wear;
-                        break;
-                    }
-                }
-            }
+        if (requiredOtherPerformance <= currentOtherPerformance) {
+            dragSustainabilityText.textContent = `(${otherName} 손상도 ${roundToDecimal(maxUsableWear, 1)}%까지)`;
+            dragSustainabilityText.classList.remove('danger');
         } else {
-            maxUsableWear_brake = 0;
-        }
-        
-        // Determine the overall weakest component and its wear limit
-        const overallMaxUsableWear = Math.min(maxUsableWear_other, maxUsableWear_brake);
-        const weakestComponent = (maxUsableWear_other < maxUsableWear_brake) ? otherName : "마찰 브레이크";
-
-        if (requiredOtherPerformance > brakePerformance || requiredOtherPerformance > currentOtherPerformance) {
-            dragSustainabilityText.textContent = `(${weakestComponent} 내구도 부족으로 사용 불가)`;
+            dragSustainabilityText.textContent = `(${otherName} 내구도 부족으로 사용 불가)`;
             dragSustainabilityText.classList.add('danger');
-        } else {
-            dragSustainabilityText.classList.remove('danger'); // Remove danger class if previously added
-            // The text should focus on the 'otherName' wear limit, which is the weakest line.
-            dragSustainabilityText.textContent = `(${otherName} 손상도 ${truncateDecimal(overallMaxUsableWear, 1)}%까지)`;
         }
     }
 
-    function updateLineGauge(elementId, linePerformance, otherPerformance, lineTitle, otherName, lineMax) {
+    // Modified updateLineGauge function for accurate wear calculation and display
+    function updateLineGauge(elementId, linePerformance, otherPerformance, lineTitle, otherName, lineMax, lineWear) {
         let textHTML = '';
         let statusClass = '';
         
@@ -1879,13 +1851,26 @@ document.addEventListener('DOMContentLoaded', () => {
             statusClass = 'status-warning';
         } else if (linePerformance > 0 && otherPerformance > 0) {
             if (linePerformance > otherPerformance) { // lineTitle (e.g., 원줄) is stronger than otherName (목줄)
-                // Desired safe scenario: otherName (목줄) breaks first.
-                const maxUsableWear = 100 - (otherPerformance / lineMax * 100);
-                textHTML = `<div class="status-line"><span class="safety-status status-safe">${otherName}${getJosa(otherName)} ${lineTitle}보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(${lineTitle} <span style="font-size: 1.1em; font-weight: bold;">${truncateDecimal(maxUsableWear, 1)}%</span> 손상도까지)</span>`;
-                statusClass = 'status-safe';
+                // Calculate max usable wear for lineTitle (e.g., 원줄) based on otherPerformance (목줄)
+                const requiredPerformanceForLine = otherPerformance;
+                let maxUsableWear_line = 0;
+                if (lineMax > 0) {
+                    maxUsableWear_line = 100 - (requiredPerformanceForLine / lineMax * 100);
+                    maxUsableWear_line = Math.max(0, Math.min(100, maxUsableWear_line));
+                }
+                
+                // Compare with current wear
+                if (lineWear < maxUsableWear_line) {
+                    textHTML = `<div class="status-line"><span class="safety-status status-safe">${otherName}${getJosa(otherName)} ${lineTitle}보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(${lineTitle} <span style="font-size: 1.1em; font-weight: bold;">${roundToDecimal(maxUsableWear_line, 1)}%</span> 손상도까지)</span>`;
+                    statusClass = 'status-safe';
+                } else {
+                    textHTML = `<div class="status-line"><span class="safety-status status-danger">위험</span></div><span class="damage-percentage" style="font-size: 0.75em;">(${lineTitle} 손상도 초과)</span>`;
+                    statusClass = 'status-danger';
+                }
+
             } else { // lineTitle (e.g., 원줄) is weaker than or equal to otherName (목줄)
                 // Dangerous scenario: lineTitle (원줄) breaks first.
-                textHTML = `<div class="status-line"><span class="safety-status status-danger">위험</span></div><span class="damage-percentage" style="font-size: 0.75em;">(${lineTitle}${getJosa(lineTitle)} ${otherName}보다 약합니다)</span>`; /* Removed bold from otherName */
+                textHTML = `<div class="status-line"><span class="safety-status status-danger">위험</span></div><span class="damage-percentage" style="font-size: 0.75em;">(${lineTitle}${getJosa(lineTitle)} ${otherName}보다 약합니다)</span>`;
                 statusClass = 'status-danger';
             }
         } else if (linePerformance > 0) {
@@ -1923,7 +1908,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (currentBrakePerformance > currentReelPerformance) {
-            warnings.push("마찰 브레이크 하중이 메커니즘 내부하중보다 높습니다."); /* Reverted warning text */
+            warnings.push("마찰브레이크 저항이 메커니즘 내부하중보다 높습니다.");
         }
         
         if (comparisonLine > currentReelPerformance) {
@@ -2026,7 +2011,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let currentBlankPerformance = 0;
         let currentReelPerformance = 0;
-        let currentBrakePerformance = 0;
 
         if (visibleGroups['blank'] === 'flex') {
             currentBlankPerformance = calculatePerformanceWithModel(blankMax, blankWear, model);
@@ -2035,11 +2019,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (visibleGroups['reel'] === 'flex') {
             currentReelPerformance = calculatePerformanceWithModel(reelMax, reelWear, model);
         }
-
+        
+        // Brake performance calculation using the model
+        let currentBrakePerformance = 0;
         if (visibleGroups['brake'] === 'flex') {
             currentBrakePerformance = calculatePerformanceWithModel(brakeMax, brakeWear, model);
         }
-        
+
         const currentMainLinePerformance = (visibleGroups['main-line'] === 'flex') ? mainLineMax * ((100 - mainLineWear) / 100) : 0;
         const currentLeadCorePerformance = (visibleGroups['lead-core'] === 'flex') ? leadCoreMax * ((100 - leadCoreWear) / 100) : 0;
         const currentLeaderPerformance = (visibleGroups['leader'] === 'flex') ? leaderMax * ((100 - leaderWear) / 100) : 0;
@@ -2048,7 +2034,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const performances = {};
         if (visibleGroups['blank'] === 'flex') performances['낚싯대'] = currentBlankPerformance;
         if (visibleGroups['reel'] === 'flex') performances['메커니즘'] = currentReelPerformance;
-        if (visibleGroups['brake'] === 'flex') performances['마찰 브레이크'] = currentBrakePerformance;
+        if (visibleGroups['brake'] === 'flex') performances['마찰브레이크 저항'] = currentBrakePerformance;
         if (visibleGroups['main-line'] === 'flex') performances['원줄'] = currentMainLinePerformance;
         if (visibleGroups['lead-core'] === 'flex') performances['리드코어'] = currentLeadCorePerformance;
         if (visibleGroups['leader'] === 'flex') performances['목줄'] = currentLeaderPerformance;
@@ -2127,25 +2113,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         currentBlankPerformanceP.style.display = (visibleGroups['blank'] === 'flex') ? 'block' : 'none';
-        currentBlankPerformanceP.textContent = `낚싯대: ${truncateDecimal(currentBlankPerformance, 2)} kg`;
+        currentBlankPerformanceP.textContent = `낚싯대: ${roundToDecimal(currentBlankPerformance, 2)} kg`;
         
         currentReelPerformanceP.style.display = (visibleGroups['reel'] === 'flex') ? 'block' : 'none';
-        currentReelPerformanceP.textContent = `메커니즘: ${truncateDecimal(currentReelPerformance, 2)} kg`;
+        currentReelPerformanceP.textContent = `메커니즘: ${roundToDecimal(currentReelPerformance, 2)} kg`;
         
         currentBrakePerformanceP.style.display = (visibleGroups['brake'] === 'flex') ? 'block' : 'none';
-        currentBrakePerformanceP.textContent = `마브 저항: ${truncateDecimal(currentBrakePerformance, 2)} kg`; /* Changed text here */
+        currentBrakePerformanceP.textContent = `마찰브레이크 저항: ${roundToDecimal(currentBrakePerformance, 2)} kg`;
         
         currentMainLinePerformanceP.style.display = (visibleGroups['main-line'] === 'flex') ? 'block' : 'none';
-        currentMainLinePerformanceP.textContent = `원줄: ${truncateDecimal(currentMainLinePerformance, 2)} kg`;
+        currentMainLinePerformanceP.textContent = `원줄: ${roundToDecimal(currentMainLinePerformance, 2)} kg`;
         
         currentLeadCorePerformanceP.style.display = (visibleGroups['lead-core'] === 'flex') ? 'block' : 'none';
-        currentLeadCorePerformanceP.textContent = `리드코어: ${truncateDecimal(currentLeadCorePerformance, 2)} kg`;
+        currentLeadCorePerformanceP.textContent = `리드코어: ${roundToDecimal(currentLeadCorePerformance, 2)} kg`;
         
         currentLeaderPerformanceP.style.display = (visibleGroups['leader'] === 'flex') ? 'block' : 'none';
-        currentLeaderPerformanceP.textContent = `목줄: ${truncateDecimal(currentLeaderPerformance, 2)} kg`;
+        currentLeaderPerformanceP.textContent = `목줄: ${roundToDecimal(currentLeaderPerformance, 2)} kg`;
         
         currentHookPerformanceP.style.display = (visibleGroups['hook'] === 'flex') ? 'block' : 'none';
-        currentHookPerformanceP.textContent = `바늘: ${truncateDecimal(currentHookPerformance, 2)} kg`;
+        currentHookPerformanceP.textContent = `바늘: ${roundToDecimal(currentHookPerformance, 2)} kg`;
 
         let comparisonLinePerformance = 0;
         let comparisonLineMax = 0;
@@ -2194,17 +2180,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setGaugeVisibility(circularGaugeWrapper, visibleGroups['brake'] === 'flex' && isComparisonLineAvailable);
         if (visibleGroups['brake'] === 'flex' && isComparisonLineAvailable) {
-            updateCircularGauge(currentBrakePerformance, comparisonLinePerformance, comparisonLineMax, comparisonLineWear, comparisonLineName, model, brakeMax, brakeWear);
+            updateCircularGauge(currentBrakePerformance, comparisonLinePerformance, comparisonLineMax, comparisonLineWear, comparisonLineName);
         }
 
         setGaugeVisibility(mainLineGaugeWrapper, visibleGroups['main-line'] === 'flex' && visibleGroups['leader'] === 'flex');
         if (visibleGroups['main-line'] === 'flex' && visibleGroups['leader'] === 'flex') {
-            updateLineGauge('main-line-sustainability-text', currentMainLinePerformance, currentLeaderPerformance, '원줄', '목줄', mainLineMax);
+            updateLineGauge('main-line-sustainability-text', currentMainLinePerformance, currentLeaderPerformance, '원줄', '목줄', mainLineMax, mainLineWear);
         }
 
         setGaugeVisibility(leadCoreGaugeWrapper, visibleGroups['lead-core'] === 'flex' && visibleGroups['leader'] === 'flex');
         if (visibleGroups['lead-core'] === 'flex' && visibleGroups['leader'] === 'flex') {
-            updateLineGauge('lead-core-sustainability-text', currentLeadCorePerformance, currentLeaderPerformance, '리드코어', '목줄', leadCoreMax);
+            updateLineGauge('lead-core-sustainability-text', currentLeadCorePerformance, currentLeaderPerformance, '리드코어', '목줄', leadCoreMax, leadCoreWear);
         }
 
         setGaugeVisibility(mainLeadGaugeWrapper, visibleGroups['main-line'] === 'flex' && visibleGroups['lead-core'] === 'flex');
@@ -2213,7 +2199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let statusClass = '';
             if (currentMainLinePerformance > currentLeadCorePerformance) {
                 const maxUsableWear = 100 - (currentLeadCorePerformance / mainLineMax * 100);
-                textHTML = `<div class="status-line"><span class="safety-status status-safe">리드코어${getJosa('리드코어')} 원줄보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(원줄 <span style="font-size: 1.1em; font-weight: bold;">${truncateDecimal(maxUsableWear, 1)}%</span> 손상도까지)</span>`;
+                textHTML = `<div class="status-line"><span class="safety-status status-safe">리드코어${getJosa('리드코어')} 원줄보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(원줄 <span style="font-size: 1.1em; font-weight: bold;">${roundToDecimal(maxUsableWear, 1)}%</span> 손상도까지)</span>`;
                 statusClass = 'status-safe';
             } else if (currentMainLinePerformance < currentLeadCorePerformance) {
                 textHTML = `<div class="status-line"><span class="safety-status status-danger">위험</span></div><span class="damage-percentage" style="font-size: 0.75em;">(원줄${getJosa('원줄')} 리드코어보다 약합니다)</span>`;
@@ -2243,19 +2229,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentBlankPerformance > weakestOfLineage.value) {
                     let protectedWear = 0;
                     // Reverse calculate the max blank wear based on weakestOfLineage.value
-                    const requiredPerformanceRatio = weakestOfLineage.value / blankMax;
-                    if (requiredPerformanceRatio >= 1.0) {
-                        protectedWear = 0;
-                    } else {
-                        for (let wear = 0; wear <= 100; wear += 0.001) {
-                            const calculatedPerformance = calculatePerformanceWithModel(blankMax, wear, model);
-                            if (calculatedPerformance <= weakestOfLineage.value) {
-                                protectedWear = wear;
-                                break;
+                    if (model === '30') {
+                        const requiredEffectivePerformance = weakestOfLineage.value - (blankMax * 0.3);
+                        if (requiredEffectivePerformance <= 0) {
+                            protectedWear = 100;
+                        } else {
+                            const effectivePart = blankMax * 0.7;
+                            const requiredWearRatio = 1 - (requiredEffectivePerformance / effectivePart);
+                            protectedWear = 100 * requiredWearRatio;
+                        }
+                    } else if (model === 'experimental') {
+                        const requiredPerformanceRatio = weakestOfLineage.value / blankMax;
+                        if (requiredPerformanceRatio >= 1.0) {
+                             protectedWear = 0;
+                        } else {
+                            const step = 0.001;
+                            for (let wear = 0; wear <= 100; wear += step) {
+                                const calculatedPerformanceRatio = calculatePerformanceWithModel(1, wear, model);
+                                if (calculatedPerformanceRatio <= requiredPerformanceRatio) {
+                                    protectedWear = wear;
+                                    break;
+                                }
                             }
                         }
+                    } else { // basic
+                         protectedWear = 100 - (weakestOfLineage.value / blankMax * 100);
                     }
-                    textHTML = `<div class="status-line"><span class="safety-status status-safe">${weakestOfLineage.name}${getJosa(weakestOfLineage.name)} 낚싯대보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(낚싯대 <span style="font-size: 1.1em; font-weight: bold;">${truncateDecimal(protectedWear, 1)}%</span> 손상도까지)</span>`;
+                    protectedWear = Math.max(0, Math.min(100, protectedWear)); // Ensure within bounds
+
+                    textHTML = `<div class="status-line"><span class="safety-status status-safe">${weakestOfLineage.name}${getJosa(weakestOfLineage.name)} 낚싯대보다 먼저 터집니다.</span></div><span class="damage-percentage" style="font-size: 0.75em;">(낚싯대 <span style="font-size: 1.1em; font-weight: bold;">${roundToDecimal(protectedWear, 1)}%</span> 손상도까지)</span>`;
                     statusClass = 'status-safe';
                 } else {
                     textHTML = `<div class="status-line"><span class="safety-status status-danger">위험</span></div><span class="damage-percentage" style="font-size: 0.75em;">(낚싯대보다 <span style="font-size: 1.1em; font-weight: bold;">${weakestOfLineage.name}${getJosa(weakestOfLineage.name)}</span> 강합니다)</span>`;
@@ -2399,8 +2401,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleButton.textContent = '-';
             }
         }
-        // Added 'leader' group to be visible by default
-        const leaderGroup = document.querySelector('.combined-input-group[data-group="leader"]');
+        const leaderGroup = document.querySelector('.combined-input-group[data-group="leader"]'); // Ensure leader is visible by default
         if (leaderGroup) {
             leaderGroup.style.display = 'flex';
             const toggleButton = leaderGroup.querySelector('.toggle-btn');
@@ -2587,10 +2588,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const diff = currentWear - savedWear;
             const diffSpan = document.getElementById(`${wearType}-wear-diff`);
             if (diffSpan) {
-                diffSpan.textContent = `${diff >= 0 ? '+' : ''}${truncateDecimal(diff, 1)}%`;
-                if (diff > 0) {
+                const formattedDiff = roundToDecimal(diff, 1); // roundToDecimal 함수 사용
+                diffSpan.textContent = `${diff >= 0 ? '+' : ''}${formattedDiff}%`;
+                if (diff > 0.05) { // Use a small epsilon for color change threshold
                     diffSpan.style.color = '#dc3545';
-                } else if (diff < 0) {
+                } else if (diff < -0.05) {
                     diffSpan.style.color = '#28a745';
                 } else {
                     diffSpan.style.color = '#6c757d';
@@ -2687,8 +2689,8 @@ document.addEventListener('DOMContentLoaded', () => {
         p.textContent = message;
         
         const confirmButton = document.createElement('button');
-            confirmButton.textContent = '확인';
-            confirmButton.style.cssText = `
+        confirmButton.textContent = '확인';
+        confirmButton.style.cssText = `
             background-color: #dc3545;
             color: white;
             padding: 8px 15px;
