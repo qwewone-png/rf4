@@ -1369,7 +1369,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const calculatedValuesDiv = document.getElementById('calculated-values');
     const resultTitle = document.getElementById('result-title');
     const currentBlankPerformanceP = document.getElementById('current-blank-performance');
-    const currentReelPerformanceP = document.getElementById('current-reel-performance');
+    const currentReelPerformanceP = document = document.getElementById('current-reel-performance');
     const currentBrakePerformanceP = document.getElementById('current-brake-performance');
     const currentLeaderPerformanceP = document.getElementById('current-leader-performance');
     const currentMainLinePerformanceP = document.getElementById('current-main-line-performance');
@@ -1401,7 +1401,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const warningContainer = document.getElementById('warning-container');
     const hamburgerMenu = document.getElementById('hamburgerMenu');
-    const sideMenu = document.getElementById('sideMenu');
+    const sideMenu = document = document.getElementById('sideMenu');
     
     const toggleButtons = document.querySelectorAll('.toggle-btn');
     const inputGroups = document.querySelectorAll('.combined-input-group');
@@ -1757,7 +1757,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let maxReelWear = 0;
         let remainingWear = 0;
 
-        if (otherPerformance > 0 && reelMax > 0) {
+        // Threshold for considering comparison performance as effectively zero
+        const MIN_COMPARISON_PERFORMANCE_THRESHOLD = 0.01; 
+
+        if (otherPerformance <= MIN_COMPARISON_PERFORMANCE_THRESHOLD) {
+            maxReelWear = 100; // 상대 부품의 성능이 극히 낮으면 릴은 100% 손상도까지 견딜 수 있다고 간주
+        } else if (reelMax <= 0) { // 릴 자체의 최대하중이 0 이하면 바로 0
+            maxReelWear = 0;
+        } else if (otherPerformance > MIN_COMPARISON_PERFORMANCE_THRESHOLD && reelMax > 0) {
             // Reverse calculate the maximum wear for the reel based on otherPerformance
             if (model === '30') {
                 const effectivePart = reelMax * 0.7;
@@ -1770,37 +1777,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else if (model === 'experimental') {
                 const requiredPerformanceRatio = otherPerformance / reelMax;
+                
                 if (requiredPerformanceRatio >= 1.0) { // Reel is already weaker than needed even at 0% wear
                     maxReelWear = 0;
                 } else {
+                    maxReelWear = 0; // Initialize for loop
+                    let foundWear = false;
                     for (let wear = 0; wear <= 100; wear += 0.001) {
-                        const calculatedPerformanceRatio = calculatePerformanceWithModel(1, wear, model); // Calculate performance ratio directly
+                        const calculatedPerformanceRatio = calculatePerformanceWithModel(1, wear, model); 
                         if (calculatedPerformanceRatio <= requiredPerformanceRatio) {
                             maxReelWear = wear;
+                            foundWear = true;
                             break;
                         }
+                    }
+                    if (!foundWear) { // If loop finishes and no wear point was found, it implies the reel is always stronger.
+                        maxReelWear = 100;
                     }
                 }
             } else { // basic
                 maxReelWear = 100 - (otherPerformance / reelMax * 100);
             }
-            // Ensure maxReelWear is within 0-100%
-            maxReelWear = Math.max(0, Math.min(100, maxReelWear));
-            remainingWear = maxReelWear - reelWear;
-        } else if (otherPerformance === 0) {
-            maxReelWear = 100;
-            remainingWear = 100 - reelWear;
-        }
+        } 
+        // Ensure maxReelWear is within 0-100%
+        maxReelWear = Math.max(0, Math.min(100, maxReelWear));
+        remainingWear = maxReelWear - reelWear;
 
         const roundedRemainingWear = roundToDecimal(remainingWear, 1);
         const roundedMaxReelWear = roundToDecimal(maxReelWear, 1);
+        const roundedExcessLoadKg = roundToDecimal(excessLoadKg, 2);
 
-        if (parseFloat(roundedRemainingWear) < 0) { // Check the formatted value for display status
-            maxReelWearText.innerHTML = `메커니즘 파손 위험`;
+        if (roundedExcessLoadKg <= 0) { // Reel is currently weaker than or equal to the other component
+            maxReelWearText.innerHTML = `메커니즘 파손 위험 (현재 ${otherName}보다 약함)`;
             maxReelWearText.style.color = '#dc3545';
-        } else {
-            maxReelWearText.innerHTML = `손상도 여유: ${roundedRemainingWear}%<br>뽀각 시점: ${roundedMaxReelWear}%`;
-            maxReelWearText.style.color = '#444';
+        } else { // Reel is currently stronger than the other component
+            if (parseFloat(roundedRemainingWear) < 0) {
+                // Reel is currently stronger, but its wear has passed the point where it would be equally strong as the other component.
+                maxReelWearText.innerHTML = `메커니즘 파손 위험`; // Simplified message as requested
+                maxReelWearText.style.color = '#dc3545';
+            } else {
+                maxReelWearText.innerHTML = `손상도 여유: ${roundedRemainingWear}%<br>뽀각 시점: ${roundedMaxReelWear}%`;
+                maxReelWearText.style.color = '#444';
+            }
         }
     }
 
