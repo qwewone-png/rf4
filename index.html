@@ -2137,7 +2137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentReelPerformanceP.textContent = `메커니즘: ${roundToDecimal(currentReelPerformance, 2)} kg`;
         
         currentBrakePerformanceP.style.display = (visibleGroups['brake'] === 'flex') ? 'block' : 'none';
-        currentBrakePerformanceP.textContent = `마찰브레이크 저항: ${roundToDecimal(currentBrakePerformance, 2)} kg`;
+        currentBrakePerformanceP.textContent = `브레이크: ${roundToDecimal(currentBrakePerformance, 2)} kg`;
         
         currentMainLinePerformanceP.style.display = (visibleGroups['main-line'] === 'flex') ? 'block' : 'none';
         currentMainLinePerformanceP.textContent = `원줄: ${roundToDecimal(currentMainLinePerformance, 2)} kg`;
